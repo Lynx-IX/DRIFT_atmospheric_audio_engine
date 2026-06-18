@@ -1013,7 +1013,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   }
 
   function buildGraph(){
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Reuse a context pre-created during the iOS warm-up touch if available
+    const ctx = state._pendingCtx || new (window.AudioContext || window.webkitAudioContext)();
+    state._pendingCtx = null;
     const masterGain = ctx.createGain();
     masterGain.gain.value = currentVolume();
 
@@ -1602,26 +1604,25 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   });
 
   // ---- iOS AudioContext unlock ----
-  // iOS Safari silently suspends any AudioContext not created inside a
-  // direct user gesture. This one-time touchstart listener creates a
-  // temporary context and immediately closes it, which "unlocks" the
-  // audio hardware for subsequent contexts created by Engage.
-  let iosUnlocked = false;
-  function iosAudioUnlock(){
-    if(iosUnlocked) return;
-    iosUnlocked = true;
-    const tmp = new (window.AudioContext || window.webkitAudioContext)();
-    const buf = tmp.createBuffer(1,1,22050);
-    const src = tmp.createBufferSource();
-    src.buffer = buf;
-    src.connect(tmp.destination);
-    src.start(0);
-    tmp.resume().then(()=>tmp.close());
-    document.removeEventListener('touchstart', iosAudioUnlock);
-    document.removeEventListener('touchend', iosAudioUnlock);
+  // iOS Safari only allows AudioContext creation inside a direct user gesture.
+  // We create a single shared context on first touch and keep it suspended,
+  // then resume it inside play(). This guarantees the context is always
+  // created within a valid gesture with no race conditions.
+  function ensureAudioContext(){
+    if(state.ctx) return Promise.resolve();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    state._pendingCtx = ctx;
+    return ctx.resume();
   }
-  document.addEventListener('touchstart', iosAudioUnlock, {passive:true});
-  document.addEventListener('touchend', iosAudioUnlock, {passive:true});
+
+  // Warm up the audio system on any first interaction
+  const warmUpOnce = (e)=>{
+    ensureAudioContext();
+    document.removeEventListener('touchstart', warmUpOnce, true);
+    document.removeEventListener('mousedown', warmUpOnce, true);
+  };
+  document.addEventListener('touchstart', warmUpOnce, {capture:true, passive:true});
+  document.addEventListener('mousedown', warmUpOnce, {capture:true, passive:true});
 
   applyMoodUI(state.moodKey);
   updateKeyLabel();
