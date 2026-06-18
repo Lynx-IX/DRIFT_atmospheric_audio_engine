@@ -123,7 +123,7 @@ body{
   cursor:pointer; user-select:none;
 }
 .bat-side-label{
-  font-family:'JetBrains Mono', monospace; font-size:0.5rem;
+  font-family:'JetBrains Mono', monospace; font-size:0.62rem;
   letter-spacing:0.04em; color:var(--engrave-dim);
   transition:color 0.15s; white-space:nowrap; min-width:44px;
 }
@@ -132,7 +132,7 @@ body{
 .bat-side-label.active{ color:var(--silk); }
 /* center label sits below the mount */
 .bat-center-label{
-  font-family:'JetBrains Mono', monospace; font-size:0.5rem;
+  font-family:'JetBrains Mono', monospace; font-size:0.62rem;
   letter-spacing:0.04em; color:var(--engrave-dim);
   text-align:center; margin-top:3px;
   transition:color 0.15s;
@@ -166,7 +166,7 @@ body{
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:10px;
-  margin-bottom:16px; position:relative; z-index:1;
+  margin-bottom:28px; position:relative; z-index:1;
 }
 /* rotary wraps center themselves in their grid cell */
 .display-row .rotary-select-wrap{
@@ -177,13 +177,151 @@ body{
   margin:0 20px;
 }
 
-/* ---------- eq cluster ---------- */
+/* ---------- eq fader cluster ---------- */
 .eq-cluster{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  display:grid; grid-template-columns:repeat(8,1fr); gap:1px;
   margin-bottom:20px; position:relative; z-index:1;
+  background:#0a0f0c; border-radius:10px; padding:14px 6px 10px;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,0.7), inset 0 -1px 0 rgba(255,255,255,0.04);
+}
+.fader-unit{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.fader-slot{
+  position:relative; width:14px; height:110px;
+  display:flex; align-items:center; justify-content:center;
+}
+/* the slot track */
+.fader-track{
+  width:4px; height:100%; border-radius:2px;
+  background:linear-gradient(180deg, #0c1410, #0a0e0c);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.8), inset 0 -1px 0 rgba(255,255,255,0.03);
+  position:relative;
+}
+/* center detent line */
+.fader-track::after{
+  content:''; position:absolute; left:-3px; right:-3px; top:50%; height:1px;
+  background:rgba(255,255,255,0.12); transform:translateY(-50%);
+}
+/* the fader cap — slides along the slot */
+.fader-cap{
+  position:absolute; left:50%; transform:translate(-50%, 0);
+  width:14px; height:22px; border-radius:3px;
+  background:linear-gradient(180deg, var(--brass-light) 0%, var(--brass) 55%, var(--brass-dark) 100%);
+  box-shadow:
+    0 2px 5px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+  cursor:ns-resize; touch-action:none;
+  transition:filter 0.1s ease;
+}
+.fader-cap::after{
+  content:''; position:absolute; left:2px; right:2px; top:50%; height:1.5px;
+  background:rgba(0,0,0,0.4); border-radius:1px; transform:translateY(-50%);
+}
+.fader-cap:active{ filter:brightness(1.15); }
+.fader-label{
+  font-family:'Oswald', sans-serif; font-size:0.62rem; letter-spacing:0.06em;
+  color:var(--silk); text-transform:uppercase; text-align:center;
+  text-shadow:0 1px 0 rgba(0,0,0,0.6);
 }
 
-/* ---------- porthole display ---------- */
+/* ---------- menu overlay (inside porthole) ---------- */
+.porthole{ cursor:pointer; }
+.porthole.menu-open canvas#orb{ opacity:0.12; transition:opacity 0.3s; }
+.porthole.menu-open .readout{ opacity:0; pointer-events:none; transition:opacity 0.2s; }
+.menu-overlay{
+  position:absolute; inset:0; border-radius:50%; z-index:10;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:20px 16px;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s ease;
+  overflow:hidden;
+}
+.porthole.menu-open .menu-overlay{ opacity:1; pointer-events:auto; }
+.menu-title{
+  font-family:'JetBrains Mono', monospace; font-size:0.65rem; letter-spacing:0.16em;
+  color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+  text-shadow:0 0 8px var(--accent);
+}
+.menu-items{ width:100%; display:flex; flex-direction:column; gap:2px; }
+.menu-item{
+  font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.03em;
+  color:rgba(180,200,170,0.55); padding:5px 8px; border-radius:3px;
+  display:flex; justify-content:space-between; align-items:center;
+  transition:color 0.15s, background 0.15s; white-space:nowrap;
+}
+.menu-item.sel{
+  color:#e0eed8;
+  background:rgba(84,178,158,0.18);
+  text-shadow:0 0 5px rgba(84,178,158,0.5);
+}
+.menu-arrow{ color:var(--accent); font-size:0.55rem; margin-right:3px; }
+.menu-val{ color:var(--accent); font-size:0.65rem; margin-left:8px; }
+/* value edit mode */
+.menu-edit-wrap{
+  width:82%; display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.menu-edit-label{
+  font-family:'JetBrains Mono', monospace; font-size:0.65rem; letter-spacing:0.1em;
+  color:var(--accent); text-transform:uppercase; text-shadow:0 0 6px var(--accent);
+}
+.menu-edit-val{
+  font-family:'JetBrains Mono', monospace; font-size:1.4rem; letter-spacing:0.06em;
+  color:#e8f0e0; text-shadow:0 0 12px rgba(84,178,158,0.7);
+}
+.menu-bar-track{
+  width:100%; height:6px; border-radius:3px; background:rgba(255,255,255,0.1);
+  position:relative;
+}
+.menu-bar-fill{
+  height:100%; border-radius:3px;
+  background:var(--accent); box-shadow:0 0 8px var(--accent);
+  transition:width 0.08s ease;
+}
+/* encoder hint below display */
+.encoder-hint{
+  font-family:'Oswald', sans-serif; font-size:0.58rem; letter-spacing:0.1em;
+  color:var(--engrave-dim); text-align:center;
+  position:relative; z-index:1; text-transform:uppercase;
+  transition:color 0.2s;
+}
+.encoder-hint.active{ color:var(--accent); }
+.encoder-row{
+  display:flex; align-items:flex-end; justify-content:center; gap:16px;
+  margin-top:6px; margin-bottom:10px; position:relative; z-index:1;
+}
+.encoder-unit{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+.encoder-btn{
+  width:34px; height:34px; border-radius:50%; cursor:pointer; border:none;
+  background:radial-gradient(circle at 34% 28%, var(--brass-light), var(--brass) 48%, var(--brass-dark));
+  box-shadow:0 3px 7px rgba(0,0,0,0.65), inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.3);
+  position:relative; flex-shrink:0;
+  transition:transform 0.1s ease, box-shadow 0.1s ease;
+}
+.encoder-btn::after{
+  content:''; position:absolute; top:50%; left:50%;
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(0,0,0,0.38); transform:translate(-50%,-50%);
+}
+.encoder-btn:active, .encoder-btn.dragging{
+  transform:translateY(1px) scale(0.96);
+  box-shadow:0 1px 3px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.3);
+  cursor:ns-resize;
+}
+.encoder-label{
+  font-family:'Oswald', sans-serif; font-size:0.56rem; letter-spacing:0.09em;
+  color:var(--engrave-dim); text-transform:uppercase;
+}
+.btn-back{
+  font-family:'Oswald', sans-serif; font-size:0.62rem; letter-spacing:0.06em;
+  text-transform:uppercase; padding:7px 13px; border-radius:5px; cursor:pointer;
+  background:linear-gradient(180deg, #263428, #1a2620);
+  border:1px solid rgba(0,0,0,0.5); color:var(--engrave-dim);
+  box-shadow:0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.2);
+  transition:color 0.15s, transform 0.1s, box-shadow 0.1s;
+}
+.btn-back:active{ transform:translateY(1px); box-shadow:0 1px 2px rgba(0,0,0,0.4); }
 .porthole-wrap{ display:flex; justify-content:center; position:relative; z-index:1; }
 .porthole{
   position:relative; width:min(180px, 38vw); aspect-ratio:1/1; border-radius:50%;
@@ -227,7 +365,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 /* ---------- mood buttons ---------- */
 .moods{
   display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
-  margin-bottom:20px; position:relative; z-index:1;
+  margin-top:4px; margin-bottom:20px; position:relative; z-index:1;
 }
 .mood-btn{
   position:relative;
@@ -235,17 +373,33 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   letter-spacing:0.05em; text-transform:uppercase;
   padding:11px 4px 9px;
   border-radius:5px;
-  background:linear-gradient(180deg,#1c2820,#121c16);
-  border:1px solid rgba(0,0,0,0.6);
+  background:linear-gradient(180deg, #263428, #1a2620);
+  border:1px solid rgba(0,0,0,0.5);
   color:var(--engrave-dim);
-  /* engraved panel cutout shadow */
+  /* protruding button — light on top, shadow on bottom */
   box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.6),
-    inset 0 -1px 0 rgba(255,255,255,0.04),
-    0 1px 0 rgba(255,255,255,0.07);
-  cursor:pointer; transition:color 0.25s ease, box-shadow 0.3s ease;
+    0 1px 0 rgba(0,0,0,0.7),
+    0 3px 6px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.25);
+  cursor:pointer; transition:color 0.25s ease, box-shadow 0.3s ease, transform 0.1s ease;
 }
-.mood-btn:hover{ color:var(--silk); }
+.mood-btn:hover{
+  color:var(--silk);
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.7),
+    0 4px 8px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -2px 0 rgba(0,0,0,0.25);
+}
+.mood-btn:active{
+  transform:translateY(1px);
+  box-shadow:
+    0 0px 0 rgba(0,0,0,0.7),
+    0 1px 3px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
 .mood-btn .led{
   display:block; width:6px; height:6px; border-radius:50%; margin:0 auto 6px;
   background:#1a1e1a;
@@ -255,10 +409,12 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 .mood-btn.active{
   color:var(--silk);
   box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.5),
-    inset 0 -1px 0 rgba(255,255,255,0.04),
+    0 1px 0 rgba(0,0,0,0.7),
+    0 3px 8px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.25),
     0 0 0 1px var(--mood-color),
-    0 2px 14px -2px var(--mood-color);
+    0 4px 16px -2px var(--mood-color);
 }
 .mood-btn.active .led{
   background:var(--mood-color);
@@ -273,8 +429,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 .section-rule::before{
   content:attr(data-label);
   position:absolute; top:-8px; left:50%; transform:translateX(-50%);
-  font-family:'Oswald', sans-serif; font-size:0.5rem; letter-spacing:0.12em;
-  color:var(--engrave-dim); background:var(--panel); padding:0 8px;
+  font-family:'Oswald', sans-serif; font-size:0.62rem; letter-spacing:0.12em; font-weight:500;
+  color:var(--silk); background:var(--panel); padding:0 10px;
   text-transform:uppercase;
 }
 
@@ -319,8 +475,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 .knob.dragging .knob-body{ filter:brightness(1.12); }
 .knob:focus-visible{ outline-offset:8px; }
 .knob-label{
-  font-family:'Oswald', sans-serif; font-size:0.55rem; letter-spacing:0.09em;
-  color:var(--engrave-dim); text-transform:uppercase;
+  font-family:'Oswald', sans-serif; font-size:0.68rem; letter-spacing:0.09em;
+  color:var(--silk); text-transform:uppercase;
   text-shadow:0 1px 0 rgba(0,0,0,0.6);
 }
 
@@ -329,30 +485,31 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   display:flex; align-items:center; justify-content:center; gap:24px;
   margin-bottom:20px; flex-wrap:wrap; position:relative; z-index:1;
 }
-.rotary-select-wrap{ position:relative; width:130px; height:130px; }
+.rotary-select-wrap{ position:relative; width:150px; height:150px; padding-bottom:26px; }
 .rotary-select-wrap .knob-well{
   position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-  width:64px; height:64px;
+  width:68px; height:68px;
 }
 .rotary-select-wrap .knob{
-  width:48px; height:48px;
+  width:52px; height:52px;
 }
 .rotary-label-ring{ position:absolute; inset:0; pointer-events:none; }
 .rotary-label-ring span{
   position:absolute; transform:translate(-50%,-50%);
-  font-family:'JetBrains Mono', monospace; font-size:0.52rem;
-  color:var(--engrave-dim);
+  font-family:'JetBrains Mono', monospace; font-size:0.6rem; font-weight:500;
+  color:#8a9e8a;
   transition:color 0.2s ease, text-shadow 0.2s ease;
 }
 .rotary-label-ring span.active{
   color:var(--accent);
-  text-shadow:0 0 6px var(--accent);
+  text-shadow:0 0 8px var(--accent);
 }
 .rotary-caption{
-  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-  font-family:'Oswald', sans-serif; font-size:0.55rem; letter-spacing:0.09em;
-  color:var(--engrave-dim); text-transform:uppercase;
-  text-shadow:0 1px 0 rgba(0,0,0,0.6);
+  position:absolute; bottom:-22px; left:50%; transform:translateX(-50%);
+  font-family:'Oswald', sans-serif; font-size:0.72rem; font-weight:600;
+  letter-spacing:0.14em; color:var(--silk); text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.4);
+  white-space:nowrap;
 }
 
 /* ---------- transport ---------- */
@@ -365,38 +522,66 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   width:76px; height:76px; border-radius:50%; border:none; cursor:pointer; position:relative;
   background:radial-gradient(circle at 34% 26%, #283828, #141e14 70%);
   box-shadow:
-    0 4px 12px rgba(0,0,0,0.7),
+    0 5px 14px rgba(0,0,0,0.7),
     0 0 0 3px #0a0e0a,
     0 0 0 4px #2a3428,
     0 0 0 5px #0a0e0a,
-    inset 0 2px 2px rgba(255,255,255,0.06),
-    inset 0 -3px 6px rgba(0,0,0,0.5);
+    inset 0 2px 2px rgba(255,255,255,0.08),
+    inset 0 -3px 5px rgba(0,0,0,0.4);
   color:var(--engrave-dim);
   font-family:'Oswald', sans-serif; font-weight:600; font-size:0.65rem; letter-spacing:0.06em; text-transform:uppercase;
-  transition:box-shadow 0.4s ease, color 0.3s ease;
+  transition:box-shadow 0.4s ease, color 0.3s ease, transform 0.1s ease;
+}
+.btn-engage:active{
+  transform:translateY(2px);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.6),
+    0 0 0 3px #0a0e0a,
+    0 0 0 4px #2a3428,
+    0 0 0 5px #0a0e0a,
+    inset 0 1px 1px rgba(255,255,255,0.05),
+    inset 0 -1px 3px rgba(0,0,0,0.3);
 }
 .btn-engage.live{
   color:var(--silk);
   box-shadow:
-    0 4px 12px rgba(0,0,0,0.7),
+    0 5px 14px rgba(0,0,0,0.7),
     0 0 0 3px #0a0e0a,
     0 0 0 4px var(--accent),
     0 0 0 5px #0a0e0a,
     inset 0 2px 2px rgba(255,255,255,0.08),
     0 0 28px 4px var(--accent);
 }
+.btn-engage.live:active{
+  transform:translateY(2px);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.6),
+    0 0 0 3px #0a0e0a,
+    0 0 0 4px var(--accent),
+    0 0 0 5px #0a0e0a,
+    inset 0 1px 1px rgba(255,255,255,0.05),
+    0 0 14px 2px var(--accent);
+}
 .btn-rnd{
   width:44px; height:44px; border-radius:6px; cursor:pointer;
-  background:linear-gradient(180deg,#1c2820,#111a14);
-  border:1px solid rgba(0,0,0,0.7); color:var(--engrave-dim);
+  background:linear-gradient(180deg, #263428, #1a2620);
+  border:1px solid rgba(0,0,0,0.5); color:var(--engrave-dim);
   font-family:'JetBrains Mono', monospace; font-size:0.58rem; letter-spacing:0.04em;
   box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.6),
-    inset 0 -1px 0 rgba(255,255,255,0.04),
-    0 1px 0 rgba(255,255,255,0.06);
-  transition:filter 0.12s ease;
+    0 3px 6px rgba(0,0,0,0.5),
+    0 1px 0 rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.25);
+  transition:color 0.15s ease, box-shadow 0.1s ease, transform 0.1s ease;
 }
-.btn-rnd:active, .btn-rnd.flash{ filter:brightness(1.5); }
+.btn-rnd:active, .btn-rnd.flash{
+  transform:translateY(1px);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.4),
+    0 0px 0 rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
 
 .footer-caption{
   margin-top:18px; font-size:0.68rem; color:#5a5e5a;
@@ -444,7 +629,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     </div>
 
     <div class="porthole-wrap">
-      <div class="porthole">
+      <div class="porthole" id="porthole">
         <canvas id="orb"></canvas>
         <div class="glass-glare"></div>
         <div class="readout">
@@ -452,6 +637,15 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
           <div class="big" id="moodLabel">FOUNDATIONAL</div>
           <div id="chordLabel">— · — · —</div>
           <div class="dim" id="timeLabel">00:00</div>
+        </div>
+        <div class="menu-overlay" id="menuOverlay">
+          <div class="menu-title" id="menuTitle">MENU</div>
+          <div class="menu-items" id="menuItems"></div>
+          <div class="menu-edit-wrap" id="menuEditWrap" style="display:none">
+            <div class="menu-edit-label" id="menuEditLabel"></div>
+            <div class="menu-edit-val" id="menuEditVal"></div>
+            <div class="menu-bar-track"><div class="menu-bar-fill" id="menuBarFill"></div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -464,6 +658,16 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
         </div>
       </div>
       <div class="rotary-caption">Scale</div>
+    </div>
+  </div>
+
+  <!-- encoder controls sit below the display row, outside the grid -->
+  <div class="encoder-hint" id="encoderHint">⊙ click display or Enter to configure</div>
+  <div class="encoder-row">
+    <button class="btn-back" id="btnBack">◄ Back</button>
+    <div class="encoder-unit">
+      <button class="encoder-btn" id="encoderBtn" aria-label="Menu encoder"></button>
+      <div class="encoder-label">Enter</div>
     </div>
   </div>
 
@@ -529,38 +733,38 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   <hr class="section-rule" data-label="EQ">
 
-  <div class="eq-cluster">
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="eqHpfKnob" tabindex="0" role="slider" aria-label="EQ High Pass" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
-      </div>
-      <div class="knob-label">Hi Pass</div>
+  <div class="eq-cluster" id="eqCluster">
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq80" data-freq="80"></div></div>
+      <div class="fader-label">80</div>
     </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="eqLowKnob" tabindex="0" role="slider" aria-label="EQ Low shelf" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
-      </div>
-      <div class="knob-label">Low</div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq160" data-freq="160"></div></div>
+      <div class="fader-label">160</div>
     </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="eqMidKnob" tabindex="0" role="slider" aria-label="EQ Mid peak" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
-      </div>
-      <div class="knob-label">Mid</div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq315" data-freq="315"></div></div>
+      <div class="fader-label">315</div>
     </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="eqHighKnob" tabindex="0" role="slider" aria-label="EQ High shelf" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
-      </div>
-      <div class="knob-label">High</div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq630" data-freq="630"></div></div>
+      <div class="fader-label">630</div>
+    </div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq1k25" data-freq="1250"></div></div>
+      <div class="fader-label">1.2k</div>
+    </div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq2k5" data-freq="2500"></div></div>
+      <div class="fader-label">2.5k</div>
+    </div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq5k" data-freq="5000"></div></div>
+      <div class="fader-label">5k</div>
+    </div>
+    <div class="fader-unit">
+      <div class="fader-slot"><div class="fader-track"></div><div class="fader-cap" id="eq10k" data-freq="10000"></div></div>
+      <div class="fader-label">10k</div>
     </div>
   </div>
 
@@ -639,7 +843,21 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     lastRootStep:null
   };
 
-  const knobValues = { density:45, brightness:50, space:50, volume:70, motion:55, chorus:55, eqHpf:20, eqLow:50, eqMid:42, eqHigh:50 };
+  const knobValues = {
+    density:45, brightness:50, space:50, volume:70, motion:55, chorus:55,
+    // menu-controlled parameters
+    voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60
+  };
+  const EQ_BANDS = [
+    { id:'eq80',   freq:80,   val:50 },
+    { id:'eq160',  freq:160,  val:50 },
+    { id:'eq315',  freq:315,  val:45 }, // slight default mid cut
+    { id:'eq630',  freq:630,  val:45 }, // slight default mid cut
+    { id:'eq1k25', freq:1250, val:50 },
+    { id:'eq2k5',  freq:2500, val:50 },
+    { id:'eq5k',   freq:5000, val:50 },
+    { id:'eq10k',  freq:10000,val:50 },
+  ];
   let tonicValue = 0;
   let currentScaleKey = 'naturalMinor';
   let tuningHz = 440;
@@ -679,8 +897,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   moodButtons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      state.moodKey = btn.dataset.mood;
+      const newMood = btn.dataset.mood;
+      if(newMood === state.moodKey) return;
+      state.moodKey = newMood;
       applyMoodUI(state.moodKey);
+      if(state.isPlaying) triggerTransition();
     });
   });
 
@@ -697,9 +918,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   function buildTonicLabels(){
     const ring = $('tonicLabels');
-    const center = 65, radius = 52;
+    const center = 75, radius = 62;
     NOTE_NAMES.forEach((name,i)=>{
-      const angleDeg = -135 + i*(270/11);
+      const angleDeg = i * (360/12); // evenly around full circle, 0° = top
       const rad = angleDeg*Math.PI/180;
       const x = center + radius*Math.sin(rad);
       const y = center - radius*Math.cos(rad);
@@ -724,9 +945,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   function buildScaleLabels(){
     const ring = $('scaleLabels');
-    const center = 65, radius = 52;
+    const center = 75, radius = 62;
     SCALE_KEYS.forEach((key,i)=>{
-      const angleDeg = -135 + i*(270/9);
+      const angleDeg = i * (360/10); // evenly around full circle
       const rad = angleDeg*Math.PI/180;
       const x = center + radius*Math.sin(rad);
       const y = center - radius*Math.cos(rad);
@@ -742,6 +963,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   }
 
   const TUNING_HZ = [440, 432, 444];
+  let tuningPos = 0;
   const tuningSwitchEl = $('tuningSwitch');
   const tuningSwitchMount = tuningSwitchEl.querySelector('.bat-mount');
   const batCenterLabel = $('batCenterLabel');
@@ -847,53 +1069,115 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     min:0, max:100, initial:knobValues.motion,
     onChange:v=>{ knobValues.motion = v; }
   });
-  knobControllers.eqHpf = createKnob($('eqHpfKnob'), {
-    min:0, max:100, initial:knobValues.eqHpf,
-    onChange:v=>{ knobValues.eqHpf = v; if(state.eqHpf) state.eqHpf.frequency.setTargetAtTime(currentEQHpf(), state.ctx.currentTime, 0.1); }
-  });
-  knobControllers.eqLow = createKnob($('eqLowKnob'), {
-    min:0, max:100, initial:knobValues.eqLow,
-    onChange:v=>{ knobValues.eqLow = v; if(state.eqLow) state.eqLow.gain.setTargetAtTime(currentEQLow(), state.ctx.currentTime, 0.1); }
-  });
-  knobControllers.eqMid = createKnob($('eqMidKnob'), {
-    min:0, max:100, initial:knobValues.eqMid,
-    onChange:v=>{ knobValues.eqMid = v; if(state.eqMid) state.eqMid.gain.setTargetAtTime(currentEQMid(), state.ctx.currentTime, 0.1); }
-  });
-  knobControllers.eqHigh = createKnob($('eqHighKnob'), {
-    min:0, max:100, initial:knobValues.eqHigh,
-    onChange:v=>{ knobValues.eqHigh = v; if(state.eqHigh) state.eqHigh.gain.setTargetAtTime(currentEQHigh(), state.ctx.currentTime, 0.1); }
-  });
-  knobControllers.tonic = createKnob($('tonicKnob'), {
-    min:0, max:11, initial:tonicValue, discrete:true, dragRange:200, keyStep:1,
-    onChange:v=>{
-      tonicValue = v;
-      updateKeyLabel();
-      refreshTonicLabelHighlight();
-      if(state.isPlaying) triggerTransition();
+  // ---- graphic EQ faders ----
+  function createFader(capEl, bandIdx){
+    const slot = capEl.parentElement;
+    const trackH = slot.querySelector('.fader-track').offsetHeight || 80;
+    const capH = 22;
+    const travel = trackH - capH;
+    let val = EQ_BANDS[bandIdx].val;
+    let dragging = false, startY = 0, startVal = 0;
+
+    function render(){
+      // val 0=bottom(min), 100=top(max); CSS top: 0=top of track
+      const topPct = (1 - val/100);
+      const topPx = topPct * travel;
+      capEl.style.top = topPx + 'px';
     }
-  });
-  knobControllers.scale = createKnob($('scaleKnob'), {
-    min:0, max:9, initial:scaleValue, discrete:true, dragRange:180, keyStep:1,
-    onChange:v=>{
-      scaleValue = v;
-      currentScaleKey = SCALE_KEYS[scaleValue];
-      refreshScaleLabelHighlight();
-      updateKeyLabel();
-      if(state.isPlaying) triggerTransition();
+    function update(v){
+      val = Math.min(100, Math.max(0, v));
+      EQ_BANDS[bandIdx].val = val;
+      render();
+      if(state.eqNodes) state.eqNodes[bandIdx].gain.setTargetAtTime(eqBandGain(val), state.ctx.currentTime, 0.05);
     }
-  });
+    capEl.addEventListener('pointerdown', e=>{
+      dragging=true; startY=e.clientY; startVal=val;
+      capEl.setPointerCapture(e.pointerId);
+    });
+    capEl.addEventListener('pointermove', e=>{
+      if(!dragging) return;
+      const dy = startY - e.clientY;
+      update(startVal + dy*(100/travel));
+    });
+    const endDrag = ()=>{ dragging=false; };
+    capEl.addEventListener('pointerup', endDrag);
+    capEl.addEventListener('pointercancel', endDrag);
+    capEl.addEventListener('wheel', e=>{
+      e.preventDefault();
+      update(val + (e.deltaY<0?2:-2));
+    }, {passive:false});
+
+    render();
+  }
+
+  // init faders after DOM is ready
+  setTimeout(()=>{
+    document.querySelectorAll('.fader-cap').forEach((cap, i)=>{
+      createFader(cap, i);
+    });
+  }, 0);
+  // ---- endless rotary encoder for key and scale ----
+  function createEndlessRotary(el, numSteps, initialVal, pxPerStep, onChange){
+    const body = el.querySelector('.knob-body');
+    const degsPerStep = 360 / numSteps;
+    let value = initialVal;
+    let rotDeg = initialVal * degsPerStep;
+    let dragging = false, startY = 0, startRot = 0;
+
+    function render(){ body.style.transform = `rotate(${rotDeg}deg)`; }
+
+    function applyRot(rot){
+      rotDeg = rot;
+      const raw = Math.round(rot / degsPerStep);
+      const newVal = ((raw % numSteps) + numSteps) % numSteps;
+      if(newVal !== value){
+        value = newVal;
+        onChange(value);
+      }
+      render();
+    }
+
+    el.addEventListener('pointerdown', e=>{
+      dragging = true; startY = e.clientY; startRot = rotDeg;
+      el.setPointerCapture(e.pointerId); el.classList.add('dragging');
+    });
+    el.addEventListener('pointermove', e=>{
+      if(!dragging) return;
+      const dy = startY - e.clientY;
+      applyRot(startRot + dy * (degsPerStep / pxPerStep));
+    });
+    const end = ()=>{ dragging = false; el.classList.remove('dragging'); };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+    el.addEventListener('wheel', e=>{
+      e.preventDefault();
+      applyRot(rotDeg + (e.deltaY < 0 ? degsPerStep : -degsPerStep));
+    }, {passive:false});
+    el.addEventListener('keydown', e=>{
+      if(e.key==='ArrowUp'||e.key==='ArrowRight'){ e.preventDefault(); applyRot(rotDeg+degsPerStep); }
+      if(e.key==='ArrowDown'||e.key==='ArrowLeft'){ e.preventDefault(); applyRot(rotDeg-degsPerStep); }
+    });
+    render();
+    return { get:()=>value };
+  }
+
+  knobControllers.tonic = createEndlessRotary($('tonicKnob'), 12, tonicValue, 14,
+    v=>{ tonicValue=v; updateKeyLabel(); refreshTonicLabelHighlight(); if(state.isPlaying) triggerTransition(); }
+  );
+  knobControllers.scale = createEndlessRotary($('scaleKnob'), 10, scaleValue, 14,
+    v=>{ scaleValue=v; currentScaleKey=SCALE_KEYS[v]; refreshScaleLabelHighlight(); updateKeyLabel(); if(state.isPlaying) triggerTransition(); }
+  );
 
   buildTonicLabels();
   buildScaleLabels();
 
-  // ---- inject SVG arc indicators into every knob well ----
+  // ---- SVG arc indicators ----
   function makeKnobArcSVG(steps){
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox','0 0 64 64');
     svg.setAttribute('class','knob-arc');
     const cx=32, cy=32, r=28;
-    // arc path from 135° to 45° (270° sweep, clockwise)
     const toXY = deg => {
       const rad = deg*Math.PI/180;
       return [cx + r*Math.cos(rad), cy + r*Math.sin(rad)];
@@ -905,7 +1189,6 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     arc.setAttribute('stroke','rgba(255,255,255,0.1)');
     arc.setAttribute('stroke-width','1.5');
     svg.appendChild(arc);
-    // tick marks
     for(let i=0;i<steps;i++){
       const t = i/(steps-1);
       const deg = 135 + t*270;
@@ -923,8 +1206,40 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     return svg;
   }
 
-  // continuous knobs: 11 ticks
-  document.querySelectorAll('.knob-unit .knob-well, .eq-cluster .knob-well').forEach(well=>{
+  function makeCircleArcSVG(steps){
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns,'svg');
+    svg.setAttribute('viewBox','0 0 64 64');
+    svg.setAttribute('class','knob-arc');
+    const cx=32, cy=32, r=28;
+    // full circle ring
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r',r);
+    circle.setAttribute('fill','none');
+    circle.setAttribute('stroke','rgba(255,255,255,0.1)');
+    circle.setAttribute('stroke-width','1.5');
+    svg.appendChild(circle);
+    // evenly spaced ticks around full 360°
+    for(let i=0;i<steps;i++){
+      const angleDeg = i*(360/steps) - 90; // start from top
+      const rad = angleDeg*Math.PI/180;
+      const ox = cx + r*Math.cos(rad), oy = cy + r*Math.sin(rad);
+      const ir = r - 5;
+      const ix = cx + ir*Math.cos(rad), iy = cy + ir*Math.sin(rad);
+      const tick = document.createElementNS(ns,'line');
+      tick.setAttribute('x1',ix); tick.setAttribute('y1',iy);
+      tick.setAttribute('x2',ox); tick.setAttribute('y2',oy);
+      tick.setAttribute('stroke','rgba(255,255,255,0.3)');
+      tick.setAttribute('stroke-width','1.5');
+      svg.appendChild(tick);
+    }
+    return svg;
+  }
+
+  // inject arcs: full circle for rotary selectors, standard arc for param knobs
+  document.querySelector('#tonicWrap .knob-well').insertBefore(makeCircleArcSVG(12), document.querySelector('#tonicWrap .knob-well').firstChild);
+  document.querySelector('#scaleWrap .knob-well').insertBefore(makeCircleArcSVG(10), document.querySelector('#scaleWrap .knob-well').firstChild);
+  document.querySelectorAll('.knob-unit .knob-well').forEach(well=>{
     well.insertBefore(makeKnobArcSVG(11), well.firstChild);
   });
 
@@ -955,13 +1270,12 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   function currentVolume(){ return knobValues.volume/100; }
   function currentMotion(){ return knobValues.motion/100; }
   function currentChorus(){ return lerp(0, 0.85, knobValues.chorus/100); }
-
-  // EQ helpers
-  function currentEQHpf(){ return 20 * Math.pow(300/20, knobValues.eqHpf/100); } // 20→300Hz log
-  function currentEQGain(v){ return lerp(-12, 8, v/100); } // -12→+8dB, center=50=-2dB
-  function currentEQLow(){ return currentEQGain(knobValues.eqLow); }
-  function currentEQMid(){ return currentEQGain(knobValues.eqMid); }
-  function currentEQHigh(){ return currentEQGain(knobValues.eqHigh); }
+  function currentVoicingWidth(){ return knobValues.voicingWidth/100; }
+  function currentHarmonicRich(){ return lerp(0.15, 2.0, knobValues.harmonicRich/100); }
+  function currentReleaseScale(){ return lerp(0.4, 2.4, knobValues.releaseScale/100); }
+  function currentPanWidth(){ return lerp(0.05, 1.8, knobValues.panWidth/100); }
+  // graphic EQ: fader center (50) = 0dB, top = +12dB, bottom = -12dB
+  function eqBandGain(val){ return lerp(-12, 12, val/100); }
 
   // returns 0..1 — a slow tide that breathes the texture from sparse/static to active/dense.
   // at motion=0 it sits flat at 0.5 (today's steady behavior); higher motion widens the swing.
@@ -1046,24 +1360,24 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     convolver.connect(reverbReturn);
     reverbReturn.connect(masterGain);
 
-    // ---- 4-band EQ: masterGain → HPF → Low → Mid → High → compressor ----
-    const eqHpf = ctx.createBiquadFilter();
-    eqHpf.type = 'highpass'; eqHpf.frequency.value = currentEQHpf(); eqHpf.Q.value = 0.7;
-    const eqLow = ctx.createBiquadFilter();
-    eqLow.type = 'lowshelf'; eqLow.frequency.value = 120; eqLow.gain.value = currentEQLow();
-    const eqMid = ctx.createBiquadFilter();
-    eqMid.type = 'peaking'; eqMid.frequency.value = 450; eqMid.Q.value = 1.4; eqMid.gain.value = currentEQMid();
-    const eqHigh = ctx.createBiquadFilter();
-    eqHigh.type = 'highshelf'; eqHigh.frequency.value = 6000; eqHigh.gain.value = currentEQHigh();
-
-    masterGain.connect(eqHpf);
-    eqHpf.connect(eqLow);
-    eqLow.connect(eqMid);
-    eqMid.connect(eqHigh);
-    eqHigh.connect(compressor);
+    // ---- 8-band graphic EQ: masterGain → band[0]→…→band[7] → compressor ----
+    const eqNodes = EQ_BANDS.map(b=>{
+      const f = ctx.createBiquadFilter();
+      f.type = 'peaking';
+      f.frequency.value = b.freq;
+      f.Q.value = 1.4;
+      f.gain.value = eqBandGain(b.val);
+      return f;
+    });
+    // chain them in series
+    masterGain.connect(eqNodes[0]);
+    for(let i=0;i<eqNodes.length-1;i++) eqNodes[i].connect(eqNodes[i+1]);
+    eqNodes[eqNodes.length-1].connect(compressor);
     compressor.connect(saturator);
     saturator.connect(analyser);
     analyser.connect(ctx.destination);
+
+    state.eqNodes = eqNodes;
 
     // ---- pad bus + ensemble chorus ----
     const padBus = ctx.createGain(); padBus.gain.value = 1;
@@ -1092,10 +1406,6 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     state.analyser = analyser;
     state.padBus = padBus;
     state.chorusWet = chorusWet;
-    state.eqHpf = eqHpf;
-    state.eqLow = eqLow;
-    state.eqMid = eqMid;
-    state.eqHigh = eqHigh;
     updateSpace();
   }
 
@@ -1155,7 +1465,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     panLfo.type = 'sine';
     panLfo.frequency.value = rand(0.012, 0.03);
     const panLfoGain = ctx.createGain();
-    panLfoGain.gain.value = rand(0.25, 0.45);
+    panLfoGain.gain.value = rand(0.25, 0.45) * currentPanWidth();
     panLfo.connect(panLfoGain);
     panLfoGain.connect(panNode.pan);
     panLfo.start();
@@ -1294,8 +1604,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const tonic = tonicMidi();
     const rootStep = pickRootStep(mood);
 
-    const extChance = mood.extensionChance * lerp(0.5, 1.4, density) * lerp(0.75, 1.3, energy);
-    const ninthChance = mood.ninthChance * lerp(0.5, 1.4, density) * lerp(0.75, 1.3, energy);
+    const richMult = currentHarmonicRich();
+    const extChance = mood.extensionChance * lerp(0.5, 1.4, density) * lerp(0.75, 1.3, energy) * richMult;
+    const ninthChance = mood.ninthChance * lerp(0.5, 1.4, density) * lerp(0.75, 1.3, energy) * richMult;
     const dyadChance = (mood.dyadChance||0) * lerp(1.3, 0.5, density) * lerp(1.2, 0.7, energy);
 
     const isDyad = Math.random() < dyadChance;
@@ -1303,10 +1614,12 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     if(!isDyad && Math.random() < extChance) steps.push(rootStep+6);
     if(!isDyad && steps.length > 3 && Math.random() < ninthChance) steps.push(rootStep+8);
 
+    const width = currentVoicingWidth();
     const names = [];
-    const freqs = steps.map(s=>{
+    const freqs = steps.map((s, i)=>{
       const semi = diatonicSemitone(scaleArr, s);
-      const midi = tonic + semi;
+      const octaveUp = i >= 2 && Math.random() < width ? 12 : 0;
+      const midi = tonic + semi + octaveUp;
       names.push(NOTE_NAMES[((midi%12)+12)%12]);
       return freqFromMidi(midi);
     });
@@ -1314,35 +1627,61 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   }
 
   // called when tonic or scale changes mid-play — crossfades drone and forces an immediate chord refresh
+  let _transitionTimer = null;
   function triggerTransition(){
     if(!state.isPlaying) return;
-    const mood = MOODS[state.moodKey];
-    const fadeTime = 2.8;
+    // wait until the knob has settled on a position for 600ms before committing
+    if(_transitionTimer) clearTimeout(_transitionTimer);
+    _transitionTimer = setTimeout(_doTransition, 600);
+  }
 
-    // fade out old drone
-    if(state.droneVoice){
-      const g = state.droneVoice.gainNode;
-      const ctx = state.ctx;
-      g.gain.cancelScheduledValues(ctx.currentTime);
-      g.gain.setValueAtTime(g.gain.value, ctx.currentTime);
-      g.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + fadeTime);
-      const oldDrone = state.droneVoice;
+  function _doTransition(){
+    if(!state.isPlaying) return;
+    _transitionTimer = null;
+    const mood = MOODS[state.moodKey];
+    const ctx = state.ctx;
+    const now = ctx.currentTime;
+
+    // cancel pending chord/sparkle timers
+    state.timers.forEach(t=>clearTimeout(t));
+    state.timers = [];
+    state.lastRootStep = null;
+
+    // capture old voices to fade out AFTER new ones arrive
+    const oldVoices = [...state.activeVoices];
+    const oldDrone = state.droneVoice;
+    state.activeVoices = [];
+    state.droneVoice = null;
+
+    // start new drone and chord immediately — no gap
+    state.droneVoice = makeDrone(mood);
+    scheduleNextChord();
+    scheduleSparkleCheck();
+
+    // gently duck master during the overlap to prevent stacking clipping
+    const overlapDuck = 0.85;
+    state.masterGain.gain.cancelScheduledValues(now);
+    state.masterGain.gain.setValueAtTime(state.masterGain.gain.value, now);
+    state.masterGain.gain.linearRampToValueAtTime(currentVolume() * overlapDuck, now + 0.1);
+    state.masterGain.gain.linearRampToValueAtTime(currentVolume(), now + 2.0);
+
+    // fade old voices out underneath the new ones
+    const fadeOut = 1.8;
+    oldVoices.forEach(v => swellOutAndKill(v, fadeOut));
+    if(oldDrone){
+      const g = oldDrone.gainNode;
+      g.gain.cancelScheduledValues(now);
+      g.gain.setValueAtTime(g.gain.value, now);
+      g.gain.linearRampToValueAtTime(0.0001, now + fadeOut);
       setTimeout(()=>{
-        try{ oldDrone.osc.stop(); oldDrone.panLfo.stop();
+        try{
+          oldDrone.osc.stop(); oldDrone.panLfo.stop();
           oldDrone.osc.disconnect(); oldDrone.filter.disconnect();
           oldDrone.gainNode.disconnect(); oldDrone.panNode.disconnect();
           oldDrone.panLfo.disconnect(); oldDrone.panLfoGain.disconnect();
         }catch(e){}
-      }, (fadeTime+0.3)*1000);
+      }, (fadeOut+0.3)*1000);
     }
-    // fade in new drone on new tonic
-    state.droneVoice = makeDrone(mood);
-
-    // clear pending chord timers and schedule a fresh chord immediately
-    state.timers.forEach(t=>clearTimeout(t));
-    state.timers = [];
-    state.lastRootStep = null;
-    scheduleNextChord();
   }
 
   function scheduleNextChord(){
@@ -1351,7 +1690,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const density = currentDensity();
     const energy = currentEnergy();
     const attack = rand(mood.attack[0], mood.attack[1]);
-    const release = rand(mood.release[0], mood.release[1]);
+    const release = rand(mood.release[0], mood.release[1]) * currentReleaseScale();
     const holdBase = lerp(mood.hold[1], mood.hold[0], density);
     const tide = lerp(1.4, 0.65, energy); // low energy = lounge longer, high energy = move faster
     const hold = rand(holdBase*0.8, holdBase*1.2) * tide;
@@ -1623,6 +1962,212 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   };
   document.addEventListener('touchstart', warmUpOnce, {capture:true, passive:true});
   document.addEventListener('mousedown', warmUpOnce, {capture:true, passive:true});
+
+  // ---- OLED menu system ----
+  const porthole = $('porthole');
+  const menuOverlay = $('menuOverlay');
+  const menuTitle = $('menuTitle');
+  const menuItemsEl = $('menuItems');
+  const menuEditWrap = $('menuEditWrap');
+  const menuEditLabel = $('menuEditLabel');
+  const menuEditVal = $('menuEditVal');
+  const menuBarFill = $('menuBarFill');
+  const encoderHint = $('encoderHint');
+  const encoderBtn = $('encoderBtn');
+  const btnBack = $('btnBack');
+
+  function updateBackBtn(){ /* always visible on hardware */ }
+  function menuBack(){
+    if(!ms.open){ return; } // nothing to do if already on performance screen
+    if(ms.depth > 0){ ms.depth--; menuRender(); }
+    else { menuClose(); } // at root level → exit to performance screen
+  }
+
+  const MENU_TREE = [
+    { label:'Tone', items:[
+      { label:'Voicing',    key:'voicingWidth' },
+      { label:'Harm Rich',  key:'harmonicRich' },
+      { label:'Brightness', key:'brightness'   },
+      { label:'Chorus',     key:'chorus'       },
+    ]},
+    { label:'Space', items:[
+      { label:'Release',    key:'releaseScale' },
+      { label:'Pan Width',  key:'panWidth'     },
+    ]},
+    { label:'Tuning', special:'tuning' },
+    { label:'System', items:[
+      { label:'Reset All',  key:'_reset'       },
+    ]},
+  ];
+
+  const TUNING_LABELS = ['440 Hz','432 Hz','444 / 528'];
+  const ms = { open:false, depth:0, rootIdx:0, catIdx:0 };
+
+  function menuRender(){
+    menuItemsEl.innerHTML = '';
+    menuEditWrap.style.display = 'none';
+    menuItemsEl.style.display = 'flex';
+
+    if(ms.depth === 0){
+      menuTitle.textContent = 'CONFIGURE';
+      MENU_TREE.forEach((cat, i)=>{
+        const el = document.createElement('div');
+        el.className = 'menu-item' + (i===ms.rootIdx?' sel':'');
+        el.innerHTML = (i===ms.rootIdx?'<span class="menu-arrow">►</span>':'')+cat.label;
+        menuItemsEl.appendChild(el);
+      });
+      encoderHint.textContent = '⊙ scroll · click to enter';
+
+    } else if(ms.depth === 1){
+      const cat = MENU_TREE[ms.rootIdx];
+      menuTitle.textContent = cat.label.toUpperCase();
+      if(cat.special === 'tuning'){
+        TUNING_LABELS.forEach((lbl, i)=>{
+          const el = document.createElement('div');
+          el.className = 'menu-item' + (i===ms.catIdx?' sel':'');
+          el.innerHTML = (i===ms.catIdx?'<span class="menu-arrow">►</span>':'')+lbl+(tuningPos===i?'<span class="menu-val">✓</span>':'');
+          menuItemsEl.appendChild(el);
+        });
+        encoderHint.textContent = '⊙ scroll · click to select';
+      } else {
+        cat.items.forEach((item, i)=>{
+          const el = document.createElement('div');
+          el.className = 'menu-item' + (i===ms.catIdx?' sel':'');
+          const valStr = item.key==='_reset' ? '' : Math.round(knobValues[item.key]);
+          el.innerHTML = (i===ms.catIdx?'<span class="menu-arrow">►</span>':'')+item.label+(valStr!==''?'<span class="menu-val">'+valStr+'</span>':'');
+          menuItemsEl.appendChild(el);
+        });
+        encoderHint.textContent = '⊙ scroll · click to edit';
+      }
+
+    } else if(ms.depth === 2){
+      const item = MENU_TREE[ms.rootIdx].items[ms.catIdx];
+      menuItemsEl.style.display = 'none';
+      menuEditWrap.style.display = 'flex';
+      menuEditLabel.textContent = item.label.toUpperCase();
+      const v = knobValues[item.key];
+      menuEditVal.textContent = Math.round(v);
+      menuBarFill.style.width = v+'%';
+      encoderHint.textContent = '⊙ scroll to adjust · click to save';
+    }
+  }
+
+  function menuOpen(){
+    ms.open = true; ms.depth = 0; ms.rootIdx = 0; ms.catIdx = 0;
+    porthole.classList.add('menu-open');
+    encoderHint.classList.add('active');
+    updateBackBtn();
+    menuRender();
+  }
+  function menuClose(){
+    ms.open = false;
+    porthole.classList.remove('menu-open');
+    encoderHint.classList.remove('active');
+    encoderHint.textContent = '⊙ click to configure';
+    updateBackBtn();
+  }
+  function menuBack(){
+    if(!ms.open) return;
+    if(ms.depth > 0){ ms.depth--; updateBackBtn(); menuRender(); }
+    else menuClose();
+  }
+  function menuClick(){
+    if(!ms.open){ menuOpen(); return; }
+    const cat = MENU_TREE[ms.rootIdx];
+    if(ms.depth === 0){
+      ms.depth = 1; ms.catIdx = 0; updateBackBtn(); menuRender();
+    } else if(ms.depth === 1){
+      if(cat.special === 'tuning'){
+        setTuningPos(ms.catIdx); menuClose();
+      } else {
+        const item = cat.items[ms.catIdx];
+        if(item.key === '_reset'){
+          Object.assign(knobValues, { voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60, brightness:50, chorus:55 });
+          menuClose();
+        } else {
+          ms.depth = 2; updateBackBtn(); menuRender();
+        }
+      }
+    } else if(ms.depth === 2){
+      ms.depth = 1; updateBackBtn(); menuRender();
+    }
+  }
+  function menuScroll(delta){
+    if(!ms.open) return;
+    const cat = MENU_TREE[ms.rootIdx];
+    if(ms.depth === 0){
+      ms.rootIdx = ((ms.rootIdx+delta)%MENU_TREE.length+MENU_TREE.length)%MENU_TREE.length;
+    } else if(ms.depth === 1){
+      const len = cat.special==='tuning' ? 3 : cat.items.length;
+      ms.catIdx = ((ms.catIdx+delta)%len+len)%len;
+    } else if(ms.depth === 2){
+      const item = cat.items[ms.catIdx];
+      knobValues[item.key] = Math.min(100, Math.max(0, knobValues[item.key] - delta*2));
+      if(item.key==='brightness' && state.ctx){
+        const mult = currentBrightnessMult();
+        state.activeVoices.forEach(v=>v.filter.frequency.setTargetAtTime(v.baseCutoff*mult, state.ctx.currentTime, 0.3));
+      }
+      if(item.key==='chorus' && state.chorusWet){
+        state.chorusWet.gain.setTargetAtTime(currentChorus(), state.ctx.currentTime, 0.2);
+      }
+    }
+    menuRender();
+  }
+
+  porthole.addEventListener('wheel', e=>{ e.preventDefault(); if(!ms.open){ menuOpen(); return; } menuScroll(e.deltaY>0?1:-1); }, {passive:false});
+  porthole.addEventListener('click', menuClick);
+  // encoder: press+drag = navigate, release without drag = confirm/select
+  let _encStartY = 0;
+  let _encDragged = false;
+  let _encAccum = 0;
+  const ENC_STEP_PX = 22; // px of drag per menu step
+
+  encoderBtn.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    _encStartY = e.clientY;
+    _encDragged = false;
+    _encAccum = 0;
+    encoderBtn.setPointerCapture(e.pointerId);
+    if(!ms.open) menuOpen();
+  });
+
+  encoderBtn.addEventListener('pointermove', e=>{
+    if(!encoderBtn.hasPointerCapture(e.pointerId)) return;
+    const dy = _encStartY - e.clientY;
+    _encAccum += dy;
+    _encStartY = e.clientY;
+    if(Math.abs(_encAccum) >= ENC_STEP_PX){
+      const steps = Math.floor(_encAccum / ENC_STEP_PX);
+      menuScroll(steps);
+      _encAccum -= steps * ENC_STEP_PX;
+      _encDragged = true;
+      encoderBtn.classList.add('dragging');
+    }
+  });
+
+  encoderBtn.addEventListener('pointerup', e=>{
+    encoderBtn.classList.remove('dragging');
+    // if barely moved — treat as a confirm press
+    if(!_encDragged) menuClick();
+  });
+
+  encoderBtn.addEventListener('pointercancel', ()=>{
+    encoderBtn.classList.remove('dragging');
+  });
+  btnBack.addEventListener('click', menuBack);
+  let _tsy = 0;
+  porthole.addEventListener('touchstart', e=>{ _tsy=e.touches[0].clientY; }, {passive:true});
+  porthole.addEventListener('touchend', e=>{
+    const dy = _tsy - e.changedTouches[0].clientY;
+    if(Math.abs(dy)>12) menuScroll(dy>0?1:-1); else menuClick();
+  }, {passive:true});
+  document.addEventListener('keydown', e=>{
+    if(!ms.open) return;
+    if(e.key==='Escape'||e.key==='Backspace'){ e.preventDefault(); menuBack(); }
+    if(e.key==='ArrowDown') menuScroll(1);
+    if(e.key==='ArrowUp') menuScroll(-1);
+    if(e.key==='Enter') menuClick();
+  });
 
   applyMoodUI(state.moodKey);
   updateKeyLabel();
