@@ -37,14 +37,16 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  padding:36px 16px 48px;
+  padding:20px 16px 20px;
 }
 :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
 
 /* ---------- module shell — powder-coated panel ---------- */
 .module{
   position:relative;
-  width:min(620px, 96vw);
+  width:605px;
+  height:979px;
+  overflow:hidden;
   /* layered gradient simulates powder-coat over cast metal */
   background:
     repeating-linear-gradient(
@@ -160,21 +162,29 @@ body{
 .bat-mount[data-pos="1"] .bat-lever{ transform:rotate(0deg); }
 .bat-mount[data-pos="2"] .bat-lever{ transform:rotate(30deg); }
 
-/* ---------- display row: key | porthole | scale ---------- */
+/* ---------- display row: [key+back] | porthole | [scale+enter] ---------- */
 .display-row{
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:center;
-  gap:10px;
-  margin-bottom:28px; position:relative; z-index:1;
+  gap:8px;
+  margin-bottom:18px; position:relative; z-index:1;
 }
-/* rotary wraps center themselves in their grid cell */
-.display-row .rotary-select-wrap{
-  justify-self:center;
+.display-left, .display-right{
+  display:flex; flex-direction:column; align-items:center;
+  position:relative; min-height:240px;
 }
-/* add layout margin to porthole to account for shadow ring extent */
 .display-row .porthole-wrap{
-  margin:0 20px;
+  display:flex; flex-direction:column; align-items:center;
+  flex-shrink:0;
+}
+/* Back: absolute bottom-right of left column, flush toward porthole */
+.display-left .btn-back{
+  position:absolute; bottom:36px; right:0;
+}
+/* Enter: absolute bottom-left of right column, flush toward porthole */
+.display-right .encoder-unit{
+  position:absolute; bottom:12px; left:0;
 }
 
 /* ---------- eq fader cluster ---------- */
@@ -287,9 +297,8 @@ body{
   transition:color 0.2s;
 }
 .encoder-hint.active{ color:var(--accent); }
-.encoder-row{
-  display:flex; align-items:flex-end; justify-content:center; gap:16px;
-  margin-top:6px; margin-bottom:10px; position:relative; z-index:1;
+.encoder-row-inner{
+  display:flex; align-items:center; gap:10px;
 }
 .encoder-unit{ display:flex; flex-direction:column; align-items:center; gap:3px; }
 .encoder-btn{
@@ -435,10 +444,24 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 }
 
 /* ---------- knob wells ---------- */
+/* ---------- knob cluster — arced 6+3 layout ---------- */
 .knob-cluster{
-  display:grid; grid-template-columns:repeat(6, 1fr); gap:8px;
-  margin-bottom:20px; position:relative; z-index:1;
+  display:flex; flex-direction:column; align-items:center;
+  gap:6px; margin-bottom:20px; position:relative; z-index:1;
 }
+.knob-row-top{
+  display:flex; gap:18px; align-items:flex-start;
+}
+.knob-row-bottom{
+  display:flex; gap:18px; justify-content:center;
+}
+/* arc — outer knobs translate down, center pair sits at peak */
+.knob-row-top .knob-unit:nth-child(1){ transform:translateY(24px); }
+.knob-row-top .knob-unit:nth-child(2){ transform:translateY(10px); }
+.knob-row-top .knob-unit:nth-child(3){ transform:translateY(2px); }
+.knob-row-top .knob-unit:nth-child(4){ transform:translateY(2px); }
+.knob-row-top .knob-unit:nth-child(5){ transform:translateY(10px); }
+.knob-row-top .knob-unit:nth-child(6){ transform:translateY(24px); }
 .knob-unit{ display:flex; flex-direction:column; align-items:center; gap:6px; }
 .knob-well{
   /* recessed panel cutout that the knob sits inside */
@@ -606,26 +629,20 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   <div class="nameplate">
     <div class="brand">DRIFT</div>
     <div class="model-line">Atmospheric Generator · Model D-1</div>
-    <div class="bat-toggle-wrap">
-      <div class="bat-toggle-row-label">Tuning</div>
-      <div class="bat-h-row" id="tuningSwitch" tabindex="0" role="slider" aria-label="Tuning" aria-valuemin="0" aria-valuemax="2">
-        <span class="bat-side-label active" data-pos="0">440 Hz</span>
-        <div class="bat-mount" data-pos="0"><div class="bat-lever"></div></div>
-        <span class="bat-side-label" data-pos="2">444 / 528</span>
-      </div>
-      <div class="bat-center-label active" id="batCenterLabel">432 Hz</div>
-    </div>
   </div>
 
   <div class="display-row">
-    <div class="rotary-select-wrap" id="tonicWrap">
-      <div class="rotary-label-ring" id="tonicLabels"></div>
-      <div class="knob-well">
-        <div class="knob" id="tonicKnob" tabindex="0" role="slider" aria-label="Key tonic" aria-valuemin="0" aria-valuemax="11">
-          <div class="knob-body"></div>
+    <div class="display-left">
+      <div class="rotary-select-wrap" id="tonicWrap">
+        <div class="rotary-label-ring" id="tonicLabels"></div>
+        <div class="knob-well">
+          <div class="knob" id="tonicKnob" tabindex="0" role="slider" aria-label="Key tonic" aria-valuemin="0" aria-valuemax="11">
+            <div class="knob-body"></div>
+          </div>
         </div>
+        <div class="rotary-caption">Key</div>
       </div>
-      <div class="rotary-caption">Key</div>
+      <button class="btn-back" id="btnBack">◄ Back</button>
     </div>
 
     <div class="porthole-wrap">
@@ -650,24 +667,21 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       </div>
     </div>
 
-    <div class="rotary-select-wrap" id="scaleWrap">
-      <div class="rotary-label-ring" id="scaleLabels"></div>
-      <div class="knob-well">
-        <div class="knob" id="scaleKnob" tabindex="0" role="slider" aria-label="Scale" aria-valuemin="0" aria-valuemax="9">
-          <div class="knob-body"></div>
+    <div class="display-right">
+      <div class="rotary-select-wrap" id="scaleWrap">
+        <div class="rotary-label-ring" id="scaleLabels"></div>
+        <div class="knob-well">
+          <div class="knob" id="scaleKnob" tabindex="0" role="slider" aria-label="Scale" aria-valuemin="0" aria-valuemax="9">
+            <div class="knob-body"></div>
+          </div>
         </div>
+        <div class="rotary-caption">Scale</div>
       </div>
-      <div class="rotary-caption">Scale</div>
-    </div>
-  </div>
-
-  <!-- encoder controls sit below the display row, outside the grid -->
-  <div class="encoder-hint" id="encoderHint">⊙ click display or Enter to configure</div>
-  <div class="encoder-row">
-    <button class="btn-back" id="btnBack">◄ Back</button>
-    <div class="encoder-unit">
-      <button class="encoder-btn" id="encoderBtn" aria-label="Menu encoder"></button>
-      <div class="encoder-label">Enter</div>
+      <div class="encoder-unit">
+        <button class="encoder-btn" id="encoderBtn" aria-label="Menu encoder"></button>
+        <div class="encoder-label">Enter</div>
+        <div class="encoder-hint" id="encoderHint" style="margin-top:3px;font-size:0.44rem;max-width:60px;text-align:center;"></div>
+      </div>
     </div>
   </div>
 
@@ -678,56 +692,46 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     <button class="mood-btn active" data-mood="foundational"><span class="led"></span>Foundational</button>
   </div>
 
-  <hr class="section-rule" data-label="Parameters">
-
   <div class="knob-cluster">
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="densityKnob" tabindex="0" role="slider" aria-label="Density" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
+    <div class="knob-row-top">
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="densityKnob" tabindex="0" role="slider" aria-label="Density" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Density</div>
       </div>
-      <div class="knob-label">Density</div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="swellKnob" tabindex="0" role="slider" aria-label="Swell" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Swell</div>
+      </div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="chorusKnob" tabindex="0" role="slider" aria-label="Chorus" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Chorus</div>
+      </div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="motionKnob" tabindex="0" role="slider" aria-label="Motion" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Motion</div>
+      </div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="droneKnob" tabindex="0" role="slider" aria-label="Drone" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Drone</div>
+      </div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="brightnessKnob" tabindex="0" role="slider" aria-label="Brightness" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Bright</div>
+      </div>
     </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="brightnessKnob" tabindex="0" role="slider" aria-label="Brightness" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
+    <div class="knob-row-bottom">
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="dryKnob" tabindex="0" role="slider" aria-label="Dry" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Dry</div>
       </div>
-      <div class="knob-label">Bright</div>
-    </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="spaceKnob" tabindex="0" role="slider" aria-label="Space" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="spaceKnob" tabindex="0" role="slider" aria-label="Space" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Space</div>
       </div>
-      <div class="knob-label">Space</div>
-    </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="chorusKnob" tabindex="0" role="slider" aria-label="Chorus" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
+      <div class="knob-unit">
+        <div class="knob-well"><div class="knob" id="wetKnob" tabindex="0" role="slider" aria-label="Wet" aria-valuemin="0" aria-valuemax="100"><div class="knob-body"></div></div></div>
+        <div class="knob-label">Wet</div>
       </div>
-      <div class="knob-label">Chorus</div>
-    </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="volumeKnob" tabindex="0" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
-      </div>
-      <div class="knob-label">Volume</div>
-    </div>
-    <div class="knob-unit">
-      <div class="knob-well">
-        <div class="knob" id="motionKnob" tabindex="0" role="slider" aria-label="Motion" aria-valuemin="0" aria-valuemax="100">
-          <div class="knob-body"></div>
-        </div>
-      </div>
-      <div class="knob-label">Motion</div>
     </div>
   </div>
 
@@ -771,6 +775,14 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   <div class="transport">
     <button class="btn-rnd" id="newVoicing">RND</button>
     <button class="btn-engage" id="playBtn">Engage</button>
+    <div class="knob-unit" style="position:relative;z-index:1;">
+      <div class="knob-well">
+        <div class="knob" id="volumeKnob" tabindex="0" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100">
+          <div class="knob-body"></div>
+        </div>
+      </div>
+      <div class="knob-label">Volume</div>
+    </div>
   </div>
 </div>
 
@@ -845,18 +857,22 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   const knobValues = {
     density:45, brightness:50, space:50, volume:70, motion:55, chorus:55,
+    wet:65, dry:100, drone:70, swell:50,
     // menu-controlled parameters
     voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60
   };
+  // Filterbank EQ: each band is a bandpass filter → gain stage
+  // val 100 = unity (full pass), val 50 = center/unity, val 0 = silence
+  // The bands overlap naturally so the full signal passes at unity
   const EQ_BANDS = [
-    { id:'eq80',   freq:80,   val:50 },
-    { id:'eq160',  freq:160,  val:50 },
-    { id:'eq315',  freq:315,  val:45 }, // slight default mid cut
-    { id:'eq630',  freq:630,  val:45 }, // slight default mid cut
-    { id:'eq1k25', freq:1250, val:50 },
-    { id:'eq2k5',  freq:2500, val:50 },
-    { id:'eq5k',   freq:5000, val:50 },
-    { id:'eq10k',  freq:10000,val:50 },
+    { id:'eq80',   freq:80,    Q:1.0, val:100 },
+    { id:'eq160',  freq:160,   Q:1.2, val:100 },
+    { id:'eq315',  freq:315,   Q:1.2, val:100 },
+    { id:'eq630',  freq:630,   Q:1.2, val:100 },
+    { id:'eq1k25', freq:1250,  Q:1.2, val:100 },
+    { id:'eq2k5',  freq:2500,  Q:1.2, val:100 },
+    { id:'eq5k',   freq:5000,  Q:1.0, val:100 },
+    { id:'eq10k',  freq:10000, Q:0.8, val:100 },
   ];
   let tonicValue = 0;
   let currentScaleKey = 'naturalMinor';
@@ -964,27 +980,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   const TUNING_HZ = [440, 432, 444];
   let tuningPos = 0;
-  const tuningSwitchEl = $('tuningSwitch');
-  const tuningSwitchMount = tuningSwitchEl.querySelector('.bat-mount');
-  const batCenterLabel = $('batCenterLabel');
-  const batSideLabels = tuningSwitchEl.querySelectorAll('.bat-side-label');
 
   function setTuningPos(pos){
     tuningPos = ((pos % 3) + 3) % 3;
     tuningHz = TUNING_HZ[tuningPos];
-    tuningSwitchMount.dataset.pos = tuningPos;
-    tuningSwitchEl.setAttribute('aria-valuenow', tuningPos);
-    // left label (pos 0) and right label (pos 2) highlight directly
-    batSideLabels.forEach(l=>l.classList.toggle('active', parseInt(l.dataset.pos)===tuningPos));
-    // center label (pos 1) highlights when center is selected
-    batCenterLabel.classList.toggle('active', tuningPos===1);
   }
-
-  tuningSwitchEl.addEventListener('click', ()=> setTuningPos(tuningPos + 1));
-  tuningSwitchEl.addEventListener('keydown', e=>{
-    if(e.key==='ArrowDown'||e.key==='ArrowRight'){ e.preventDefault(); setTuningPos(tuningPos+1); }
-    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){ e.preventDefault(); setTuningPos(tuningPos-1); }
-  });
 
   // ---------- knob component ----------
   function createKnob(el, opts){
@@ -1069,6 +1069,25 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     min:0, max:100, initial:knobValues.motion,
     onChange:v=>{ knobValues.motion = v; }
   });
+  knobControllers.wet = createKnob($('wetKnob'), {
+    min:0, max:100, initial:knobValues.wet,
+    onChange:v=>{ knobValues.wet = v; if(state.reverbReturn) state.reverbReturn.gain.setTargetAtTime(currentWet(), state.ctx.currentTime, 0.1); }
+  });
+  knobControllers.dry = createKnob($('dryKnob'), {
+    min:0, max:100, initial:knobValues.dry,
+    onChange:v=>{ knobValues.dry = v; if(state.dryGain) state.dryGain.gain.setTargetAtTime(currentDry(), state.ctx.currentTime, 0.1); }
+  });
+  knobControllers.drone = createKnob($('droneKnob'), {
+    min:0, max:100, initial:knobValues.drone,
+    onChange:v=>{
+      knobValues.drone = v;
+      if(state.droneVoice) state.droneVoice.gainNode.gain.setTargetAtTime(0.22*currentDroneLevel(), state.ctx.currentTime, 0.2);
+    }
+  });
+  knobControllers.swell = createKnob($('swellKnob'), {
+    min:0, max:100, initial:knobValues.swell,
+    onChange:v=>{ knobValues.swell = v; }
+  });
   // ---- graphic EQ faders ----
   function createFader(capEl, bandIdx){
     const slot = capEl.parentElement;
@@ -1088,7 +1107,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       val = Math.min(100, Math.max(0, v));
       EQ_BANDS[bandIdx].val = val;
       render();
-      if(state.eqNodes) state.eqNodes[bandIdx].gain.setTargetAtTime(eqBandGain(val), state.ctx.currentTime, 0.05);
+      if(state.eqNodes) state.eqNodes[bandIdx].gain.gain.setTargetAtTime(eqBandGain(val), state.ctx.currentTime, 0.03);
     }
     capEl.addEventListener('pointerdown', e=>{
       dragging=true; startY=e.clientY; startVal=val;
@@ -1270,12 +1289,16 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   function currentVolume(){ return knobValues.volume/100; }
   function currentMotion(){ return knobValues.motion/100; }
   function currentChorus(){ return lerp(0, 0.85, knobValues.chorus/100); }
+  function currentWet(){ return knobValues.wet/100; }
+  function currentDry(){ return knobValues.dry/100; }
+  function currentDroneLevel(){ return knobValues.drone/100; }
+  function currentSwellSpeed(){ return lerp(0.3, 2.5, knobValues.swell/100); }
   function currentVoicingWidth(){ return knobValues.voicingWidth/100; }
   function currentHarmonicRich(){ return lerp(0.15, 2.0, knobValues.harmonicRich/100); }
   function currentReleaseScale(){ return lerp(0.4, 2.4, knobValues.releaseScale/100); }
   function currentPanWidth(){ return lerp(0.05, 1.8, knobValues.panWidth/100); }
-  // graphic EQ: fader center (50) = 0dB, top = +12dB, bottom = -12dB
-  function eqBandGain(val){ return lerp(-12, 12, val/100); }
+  // filterbank: fader 100=unity, 0=silence — linear gain
+  function eqBandGain(val){ return val/100; }
 
   // returns 0..1 — a slow tide that breathes the texture from sparse/static to active/dense.
   // at motion=0 it sits flat at 0.5 (today's steady behavior); higher motion widens the swing.
@@ -1354,25 +1377,33 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const convolver = ctx.createConvolver();
     convolver.buffer = createImpulse(ctx, rvbDur, rvbDecay, rvbMod);
     const reverbReturn = ctx.createGain();
-    reverbReturn.gain.value = 1;
+    reverbReturn.gain.value = currentWet();
+    const dryGain = ctx.createGain();
+    dryGain.gain.value = currentDry();
 
     reverbSend.connect(convolver);
     convolver.connect(reverbReturn);
     reverbReturn.connect(masterGain);
+    dryGain.connect(masterGain);
 
-    // ---- 8-band graphic EQ: masterGain → band[0]→…→band[7] → compressor ----
+    // ---- filterbank EQ: parallel bandpass bands, each with its own gain ----
+    // masterGain → [band0_bp → band0_gain] ─┐
+    //              [band1_bp → band1_gain] ─ merge → compressor
+    //              ...                       ┘
+    const eqMerge = ctx.createGain(); eqMerge.gain.value = 1/EQ_BANDS.length;
     const eqNodes = EQ_BANDS.map(b=>{
-      const f = ctx.createBiquadFilter();
-      f.type = 'peaking';
-      f.frequency.value = b.freq;
-      f.Q.value = 1.4;
-      f.gain.value = eqBandGain(b.val);
-      return f;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = b.freq;
+      bp.Q.value = b.Q;
+      const gain = ctx.createGain();
+      gain.gain.value = eqBandGain(b.val);
+      masterGain.connect(bp);
+      bp.connect(gain);
+      gain.connect(eqMerge);
+      return { bp, gain };
     });
-    // chain them in series
-    masterGain.connect(eqNodes[0]);
-    for(let i=0;i<eqNodes.length-1;i++) eqNodes[i].connect(eqNodes[i+1]);
-    eqNodes[eqNodes.length-1].connect(compressor);
+    eqMerge.connect(compressor);
     compressor.connect(saturator);
     saturator.connect(analyser);
     analyser.connect(ctx.destination);
@@ -1403,6 +1434,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     state.masterGain = masterGain;
     state.reverbSend = reverbSend;
     state.convolver = convolver;
+    state.reverbReturn = reverbReturn;
+    state.dryGain = dryGain;
     state.analyser = analyser;
     state.padBus = padBus;
     state.chorusWet = chorusWet;
@@ -1421,7 +1454,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   }
 
   function mixBusConnect(node){
-    node.connect(state.masterGain);
+    node.connect(state.dryGain);
     node.connect(state.reverbSend);
   }
 
@@ -1539,7 +1572,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     osc.connect(filter); filter.connect(gainNode); gainNode.connect(panNode);
     mixBusConnect(panNode);
     osc.start();
-    gainNode.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 6);
+    gainNode.gain.linearRampToValueAtTime(0.22 * currentDroneLevel(), ctx.currentTime + 6);
     return { osc, filter, gainNode, panNode, panLfo, panLfoGain };
   }
 
@@ -1689,7 +1722,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const mood = MOODS[state.moodKey];
     const density = currentDensity();
     const energy = currentEnergy();
-    const attack = rand(mood.attack[0], mood.attack[1]);
+    const attack = rand(mood.attack[0], mood.attack[1]) * currentSwellSpeed();
     const release = rand(mood.release[0], mood.release[1]) * currentReleaseScale();
     const holdBase = lerp(mood.hold[1], mood.hold[0], density);
     const tide = lerp(1.4, 0.65, energy); // low energy = lounge longer, high energy = move faster
