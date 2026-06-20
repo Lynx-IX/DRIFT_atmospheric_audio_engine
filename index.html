@@ -45,7 +45,6 @@ body{
 .module{
   position:relative;
   width:min(620px, 96vw);
-  /* layered gradient simulates powder-coat over cast metal */
   background:
     repeating-linear-gradient(
       91deg,
@@ -61,15 +60,13 @@ body{
       var(--panel-lo) 100%
     );
   border-radius:8px;
-  padding:28px 26px 22px;
+  padding:16px 22px 16px;
   box-shadow:
     0 40px 70px -20px rgba(0,0,0,0.9),
-    /* machined bevel */
     inset 0 5px 0 rgba(255,255,255,0.2),
     inset 5px 0 0 rgba(255,255,255,0.1),
     inset 0 -5px 0 rgba(0,0,0,0.8),
     inset -5px 0 0 rgba(0,0,0,0.6),
-    /* outer hard edge */
     0 0 0 1px rgba(0,0,0,0.9),
     0 2px 0 1px rgba(255,255,255,0.07);
 }
@@ -90,8 +87,8 @@ body{
 
 /* ---- nameplate / brand ---- */
 .nameplate{
-  text-align:center; margin-bottom:16px; position:relative; z-index:1;
-  padding-bottom:14px;
+  text-align:center; margin-bottom:8px; position:relative; z-index:1;
+  padding-bottom:8px;
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
 .brand{
@@ -108,65 +105,13 @@ body{
   color:var(--engrave-dim); text-transform:uppercase; margin-top:4px;
 }
 
-/* ---- bat toggle switch — horizontal 3-position ---- */
-.bat-toggle-wrap{
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  position:relative; margin-top:14px;
-}
-.bat-toggle-row-label{
-  font-family:'Oswald', sans-serif; font-size:0.52rem; letter-spacing:0.1em;
-  color:var(--engrave-dim); text-transform:uppercase;
-}
-/* outer row: left-label | mount | right-label */
-.bat-h-row{
-  display:flex; align-items:center; gap:10px;
-  cursor:pointer; user-select:none;
-}
-.bat-side-label{
-  font-family:'JetBrains Mono', monospace; font-size:0.62rem;
-  letter-spacing:0.04em; color:var(--engrave-dim);
-  transition:color 0.15s; white-space:nowrap; min-width:44px;
-}
-.bat-side-label:first-child{ text-align:right; }
-.bat-side-label:last-child{ text-align:left; }
-.bat-side-label.active{ color:var(--silk); }
-/* center label sits below the mount */
-.bat-center-label{
-  font-family:'JetBrains Mono', monospace; font-size:0.62rem;
-  letter-spacing:0.04em; color:var(--engrave-dim);
-  text-align:center; margin-top:3px;
-  transition:color 0.15s;
-}
-.bat-center-label.active{ color:var(--silk); }
-/* mounting nut */
-.bat-mount{
-  width:16px; height:16px; border-radius:3px; flex-shrink:0;
-  background:radial-gradient(circle at 36% 28%, var(--steel-light), var(--steel) 55%, var(--steel-dark));
-  box-shadow:0 2px 5px rgba(0,0,0,0.7), 0 0 0 2px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-  position:relative; display:flex; align-items:center; justify-content:center;
-  cursor:pointer;
-}
-/* lever — horizontal sweep, pivots from bottom of mount */
-.bat-lever{
-  width:8px; height:28px; border-radius:4px 4px 2px 2px;
-  background:linear-gradient(90deg, var(--brass-light) 0%, var(--brass) 45%, var(--brass-dark) 100%);
-  box-shadow:0 -2px 5px rgba(0,0,0,0.55), inset 1px 0 0 rgba(255,255,255,0.28);
-  position:absolute; bottom:6px;
-  transform-origin:center bottom;
-  transition:transform 0.13s cubic-bezier(0.23, 1, 0.32, 1);
-}
-/* positions: left=440, center=432, right=444 */
-.bat-mount[data-pos="0"] .bat-lever{ transform:rotate(-30deg); }
-.bat-mount[data-pos="1"] .bat-lever{ transform:rotate(0deg); }
-.bat-mount[data-pos="2"] .bat-lever{ transform:rotate(30deg); }
-
 /* ---------- display row: key | porthole | scale ---------- */
 .display-row{
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:10px;
-  margin-bottom:28px; position:relative; z-index:1;
+  margin-bottom:10px; position:relative; z-index:1;
 }
 /* rotary wraps center themselves in their grid cell */
 .display-row .rotary-select-wrap{
@@ -180,15 +125,15 @@ body{
 /* ---------- eq fader cluster ---------- */
 .eq-cluster{
   display:grid; grid-template-columns:repeat(8,1fr); gap:1px;
-  margin-bottom:20px; position:relative; z-index:1;
-  background:#0a0f0c; border-radius:10px; padding:14px 6px 10px;
+  margin-bottom:10px; position:relative; z-index:1;
+  background:#0a0f0c; border-radius:10px; padding:10px 6px 8px;
   box-shadow:inset 0 2px 6px rgba(0,0,0,0.7), inset 0 -1px 0 rgba(255,255,255,0.04);
 }
 .fader-unit{
   display:flex; flex-direction:column; align-items:center; gap:6px;
 }
 .fader-slot{
-  position:relative; width:14px; height:110px;
+  position:relative; width:18px; height:95px;
   display:flex; align-items:center; justify-content:center;
 }
 /* the slot track */
@@ -200,13 +145,13 @@ body{
 }
 /* center detent line */
 .fader-track::after{
-  content:''; position:absolute; left:-3px; right:-3px; top:50%; height:1px;
+  content:''; position:absolute; left:-4px; right:-4px; top:50%; height:1px;
   background:rgba(255,255,255,0.12); transform:translateY(-50%);
 }
 /* the fader cap — slides along the slot */
 .fader-cap{
   position:absolute; left:50%; transform:translate(-50%, 0);
-  width:14px; height:22px; border-radius:3px;
+  width:18px; height:26px; border-radius:3px;
   background:linear-gradient(180deg, var(--brass-light) 0%, var(--brass) 55%, var(--brass-dark) 100%);
   box-shadow:
     0 2px 5px rgba(0,0,0,0.6),
@@ -216,7 +161,7 @@ body{
   transition:filter 0.1s ease;
 }
 .fader-cap::after{
-  content:''; position:absolute; left:2px; right:2px; top:50%; height:1.5px;
+  content:''; position:absolute; left:3px; right:3px; top:50%; height:1.5px;
   background:rgba(0,0,0,0.4); border-radius:1px; transform:translateY(-50%);
 }
 .fader-cap:active{ filter:brightness(1.15); }
@@ -244,18 +189,26 @@ body{
   color:var(--accent); text-transform:uppercase; margin-bottom:10px;
   text-shadow:0 0 8px var(--accent);
 }
-.menu-items{ width:100%; display:flex; flex-direction:column; gap:2px; }
+.menu-items{
+  width:100%; display:flex; flex-direction:column; align-items:center;
+  gap:2px; position:relative;
+}
 .menu-item{
-  font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.03em;
-  color:rgba(180,200,170,0.55); padding:5px 8px; border-radius:3px;
+  font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.03em;
+  color:rgba(180,200,170,0.35); padding:4px 8px; border-radius:3px;
   display:flex; justify-content:space-between; align-items:center;
-  transition:color 0.15s, background 0.15s; white-space:nowrap;
+  gap:8px; width:100%; max-width:135px;
+  transition:color 0.15s, background 0.15s, opacity 0.15s; white-space:nowrap;
+  opacity:0.5;
 }
 .menu-item.sel{
   color:#e0eed8;
   background:rgba(84,178,158,0.18);
   text-shadow:0 0 5px rgba(84,178,158,0.5);
+  opacity:1;
+  font-size:0.7rem;
 }
+.menu-item.adjacent{ opacity:0.4; font-size:0.6rem; }
 .menu-arrow{ color:var(--accent); font-size:0.55rem; margin-right:3px; }
 .menu-val{ color:var(--accent); font-size:0.65rem; margin-left:8px; }
 /* value edit mode */
@@ -289,7 +242,7 @@ body{
 .encoder-hint.active{ color:var(--accent); }
 .encoder-row{
   display:flex; align-items:flex-end; justify-content:center; gap:16px;
-  margin-top:6px; margin-bottom:10px; position:relative; z-index:1;
+  margin-top:3px; margin-bottom:6px; position:relative; z-index:1;
 }
 .encoder-unit{ display:flex; flex-direction:column; align-items:center; gap:3px; }
 .encoder-btn{
@@ -364,8 +317,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
 /* ---------- mood buttons ---------- */
 .moods{
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
-  margin-top:4px; margin-bottom:20px; position:relative; z-index:1;
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
+  margin-top:2px; margin-bottom:10px; position:relative; z-index:1;
 }
 .mood-btn{
   position:relative;
@@ -424,7 +377,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 /* ---------- section divider line ---------- */
 .section-rule{
   border:none; border-top:1px solid rgba(255,255,255,0.055);
-  margin:0 0 18px; position:relative; z-index:1;
+  margin:0 0 8px; position:relative; z-index:1;
 }
 .section-rule::before{
   content:attr(data-label);
@@ -438,12 +391,16 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 .knob-cluster{
   position:relative;
   width:100%;
-  margin-bottom:20px;
+  margin-bottom:6px;
   z-index:1;
 }
-/* arc row heights — enough to contain the knobs plus label below */
-.knob-cluster.row-5{ height:110px; }
-.knob-cluster.row-4{ height:100px; }
+.knob-cluster.row-5{ height:105px; }
+/* flat centered row — no arc, for Filter·Shape master controls */
+.knob-cluster.flat-row{
+  display:flex; justify-content:center; align-items:flex-start;
+  gap:24px; height:auto; padding-bottom:10px;
+}
+.knob-cluster.flat-row .knob-unit{ position:static; transform:none; }
 
 .knob-unit{
   position:absolute;
@@ -492,7 +449,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 /* ---------- key + scale rotaries ---------- */
 .key-cluster{
   display:flex; align-items:center; justify-content:center; gap:24px;
-  margin-bottom:20px; flex-wrap:wrap; position:relative; z-index:1;
+  margin-bottom:10px; flex-wrap:wrap; position:relative; z-index:1;
 }
 .rotary-select-wrap{ position:relative; width:150px; height:150px; padding-bottom:26px; }
 .rotary-select-wrap .knob-well{
@@ -523,15 +480,26 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
 /* ---------- transport ---------- */
 .transport{
-  display:flex; align-items:center; justify-content:space-between;
-  padding-top:18px; border-top:1px solid rgba(255,255,255,0.045);
-  position:relative; z-index:1; gap:10px;
+  position:relative; z-index:1;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  padding:10px 16px 0;
+  border-top:1px solid rgba(255,255,255,0.045);
+}
+.transport-left{
+  display:flex; align-items:center; gap:12px; justify-content:flex-start;
+}
+.transport-right{
+  display:flex; align-items:center; justify-content:flex-end;
 }
 .transport-rnd{
   display:flex; flex-direction:column; gap:8px; align-items:center;
+  flex-shrink:0;
 }
-.transport-knobs{
-  display:flex; gap:14px; align-items:flex-start; justify-content:center; flex:1;
+/* remove the absolute override from before */
+.btn-engage{
+  position:static; left:auto; transform:none;
 }
 .btn-engage{
   width:76px; height:76px; border-radius:50%; border:none; cursor:pointer; position:relative;
@@ -600,7 +568,6 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
-/* ---- Output knob — same size as Seed, accent color ---- */
 .output-well{
   width:78px !important; height:78px !important;
 }
@@ -655,15 +622,6 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   <div class="nameplate">
     <div class="brand">DRIFT</div>
     <div class="model-line">Atmospheric Generator · Model D-1</div>
-    <div class="bat-toggle-wrap">
-      <div class="bat-toggle-row-label">Tuning</div>
-      <div class="bat-h-row" id="tuningSwitch" tabindex="0" role="slider" aria-label="Tuning" aria-valuemin="0" aria-valuemax="2">
-        <span class="bat-side-label active" data-pos="0">440 Hz</span>
-        <div class="bat-mount" data-pos="0"><div class="bat-lever"></div></div>
-        <span class="bat-side-label" data-pos="2">444 / 528</span>
-      </div>
-      <div class="bat-center-label active" id="batCenterLabel">432 Hz</div>
-    </div>
   </div>
 
   <div class="display-row">
@@ -766,7 +724,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
           <div class="knob-body"></div>
         </div>
       </div>
-      <div class="knob-label" title="Ensemble chorus wet level — dual detuned delay modulated by slow LFOs">Ensemble</div>
+      <div class="knob-label" title="Ensemble chorus wet level — dual detuned delay modulated by slow LFOs">Chorus</div>
     </div>
   </div>
 
@@ -852,14 +810,54 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     </div>
   </div>
 
+  <hr class="section-rule" data-label="Filter · Shape">
+
+  <div class="knob-cluster flat-row" id="toneShapeCluster">
+    <div class="knob-unit">
+      <div class="knob-well">
+        <div class="knob" id="masterHpKnob" tabindex="0" role="slider" aria-label="Master HP Cutoff" aria-valuemin="0" aria-valuemax="100">
+          <div class="knob-body"></div>
+        </div>
+      </div>
+      <div class="knob-label" title="Master highpass filter on output bus — sweep up to cut low end and thin the sound">Mst HP</div>
+    </div>
+    <div class="knob-unit">
+      <div class="knob-well">
+        <div class="knob" id="masterLpKnob" tabindex="0" role="slider" aria-label="Master LP Cutoff" aria-valuemin="0" aria-valuemax="100">
+          <div class="knob-body"></div>
+        </div>
+      </div>
+      <div class="knob-label" title="Master lowpass filter on output bus — sweep down to close off the whole signal">Mst LP</div>
+    </div>
+    <div class="knob-unit">
+      <div class="knob-well">
+        <div class="knob" id="resonanceKnob" tabindex="0" role="slider" aria-label="Filter Resonance" aria-valuemin="0" aria-valuemax="100">
+          <div class="knob-body"></div>
+        </div>
+      </div>
+      <div class="knob-label" title="Resonance / Q on both master LP and HP filters — adds peak at cutoff for vowel sweeps">Resonance</div>
+    </div>
+    <div class="knob-unit">
+      <div class="knob-well">
+        <div class="knob" id="eqTiltKnob" tabindex="0" role="slider" aria-label="EQ Tilt" aria-valuemin="0" aria-valuemax="100">
+          <div class="knob-body"></div>
+        </div>
+      </div>
+      <div class="knob-label" title="EQ tilt — center is flat; turn left to darken (boost lows, cut highs), turn right to brighten">EQ Tilt</div>
+    </div>
+    <div class="knob-unit">
+      <div class="knob-well">
+        <div class="knob" id="driveKnob" tabindex="0" role="slider" aria-label="Drive / Saturation" aria-valuemin="0" aria-valuemax="100">
+          <div class="knob-body"></div>
+        </div>
+      </div>
+      <div class="knob-label" title="Saturation drive — pushes the waveshaper harder for harmonic richness and grit">Drive</div>
+    </div>
+  </div>
+
   <div class="transport">
 
-    <div class="transport-rnd">
-      <button class="btn-rnd" id="rndHarm" title="Randomize voicing — triggers a fresh chord with new harmonic content">RND<br><span>Harm</span></button>
-      <button class="btn-rnd" id="rndTex" title="Randomize texture — scrambles Voice Dens, LP Cutoff, Ensemble, Rvb Send, Tide Rate">RND<br><span>Tex</span></button>
-    </div>
-
-    <div class="transport-knobs">
+    <div class="transport-left">
       <div class="seed-unit">
         <div class="knob-well seed-well">
           <div class="knob seed-knob" id="seedKnob" tabindex="0" role="slider" aria-label="Seed — harmonic territory" aria-valuemin="0" aria-valuemax="100">
@@ -868,6 +866,15 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
         </div>
         <div class="knob-label seed-label" title="Shifts harmonic territory: chord step weighting, register, detune spread, LFO character — without changing key, scale or mood">Seed</div>
       </div>
+      <div class="transport-rnd">
+        <button class="btn-rnd" id="rndHarm" title="Randomize voicing — triggers a fresh chord with new harmonic content">RND<br><span>Harm</span></button>
+        <button class="btn-rnd" id="rndTex" title="Randomize texture — scrambles all texture knobs">RND<br><span>Tex</span></button>
+      </div>
+    </div>
+
+    <button class="btn-engage" id="playBtn">Engage</button>
+
+    <div class="transport-right">
       <div class="seed-unit">
         <div class="knob-well output-well">
           <div class="knob output-knob" id="volumeKnob" tabindex="0" role="slider" aria-label="Output Gain" aria-valuemin="0" aria-valuemax="100">
@@ -878,7 +885,6 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       </div>
     </div>
 
-    <button class="btn-engage" id="playBtn">Engage</button>
   </div>
 </div>
 
@@ -954,7 +960,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   const knobValues = {
     density:45, brightness:50, space:50, volume:70, motion:55, chorus:55,
     voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60,
-    seed:50, wetDry:75  // 75 = mostly wet default, feels like a pad
+    seed:50, wetDry:75, masterLp:100, masterHp:0, resonance:0, eqTilt:50, drive:30
   };
   const EQ_BANDS = [
     { id:'eq80',   freq:80,   val:50 },
@@ -1072,27 +1078,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   const TUNING_HZ = [440, 432, 444];
   let tuningPos = 0;
-  const tuningSwitchEl = $('tuningSwitch');
-  const tuningSwitchMount = tuningSwitchEl.querySelector('.bat-mount');
-  const batCenterLabel = $('batCenterLabel');
-  const batSideLabels = tuningSwitchEl.querySelectorAll('.bat-side-label');
 
   function setTuningPos(pos){
     tuningPos = ((pos % 3) + 3) % 3;
     tuningHz = TUNING_HZ[tuningPos];
-    tuningSwitchMount.dataset.pos = tuningPos;
-    tuningSwitchEl.setAttribute('aria-valuenow', tuningPos);
-    // left label (pos 0) and right label (pos 2) highlight directly
-    batSideLabels.forEach(l=>l.classList.toggle('active', parseInt(l.dataset.pos)===tuningPos));
-    // center label (pos 1) highlights when center is selected
-    batCenterLabel.classList.toggle('active', tuningPos===1);
   }
-
-  tuningSwitchEl.addEventListener('click', ()=> setTuningPos(tuningPos + 1));
-  tuningSwitchEl.addEventListener('keydown', e=>{
-    if(e.key==='ArrowDown'||e.key==='ArrowRight'){ e.preventDefault(); setTuningPos(tuningPos+1); }
-    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){ e.preventDefault(); setTuningPos(tuningPos-1); }
-  });
 
   // ---------- knob component ----------
   function createKnob(el, opts){
@@ -1212,6 +1202,51 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     // affects octave inversion spread — takes effect on next chord; retrigger soon
     onChange:v=>{ knobValues.voicingWidth = v; scheduleChordRetrigger(); }
   });
+  function updateMasterLp(){
+    if(!state.masterLpFilter) return;
+    state.masterLpFilter.frequency.setTargetAtTime(currentMasterLp(), state.ctx.currentTime, 0.05);
+  }
+  function updateMasterHp(){
+    if(!state.masterHpFilter) return;
+    state.masterHpFilter.frequency.setTargetAtTime(currentMasterHp(), state.ctx.currentTime, 0.05);
+  }
+  function updateResonance(){
+    if(!state.masterLpFilter) return;
+    const q = currentResonance();
+    state.masterLpFilter.Q.setTargetAtTime(q, state.ctx.currentTime, 0.05);
+    state.masterHpFilter.Q.setTargetAtTime(q, state.ctx.currentTime, 0.05);
+  }
+  function updateEqTilt(){
+    if(!state.tiltLow) return;
+    const t = currentEqTilt();
+    state.tiltLow.gain.setTargetAtTime(-t, state.ctx.currentTime, 0.08);
+    state.tiltHigh.gain.setTargetAtTime(t, state.ctx.currentTime, 0.08);
+  }
+  function updateDrive(){
+    if(!state.saturator) return;
+    state.saturator.curve = makeSaturationCurve(currentDrive());
+  }
+
+  knobControllers.masterLp = createKnob($('masterLpKnob'), {
+    min:0, max:100, initial:knobValues.masterLp,
+    onChange:v=>{ knobValues.masterLp = v; updateMasterLp(); }
+  });
+  knobControllers.masterHp = createKnob($('masterHpKnob'), {
+    min:0, max:100, initial:knobValues.masterHp,
+    onChange:v=>{ knobValues.masterHp = v; updateMasterHp(); }
+  });
+  knobControllers.resonance = createKnob($('resonanceKnob'), {
+    min:0, max:100, initial:knobValues.resonance,
+    onChange:v=>{ knobValues.resonance = v; updateResonance(); }
+  });
+  knobControllers.eqTilt = createKnob($('eqTiltKnob'), {
+    min:0, max:100, initial:knobValues.eqTilt,
+    onChange:v=>{ knobValues.eqTilt = v; updateEqTilt(); }
+  });
+  knobControllers.drive = createKnob($('driveKnob'), {
+    min:0, max:100, initial:knobValues.drive,
+    onChange:v=>{ knobValues.drive = v; updateDrive(); }
+  });
   knobControllers.wetDry = createKnob($('wetDryKnob'), {
     min:0, max:100, initial:knobValues.wetDry,
     onChange:v=>{ knobValues.wetDry = v; updateWetDry(); }
@@ -1265,7 +1300,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       val = Math.min(100, Math.max(0, v));
       EQ_BANDS[bandIdx].val = val;
       render();
-      if(state.eqNodes) state.eqNodes[bandIdx].gain.setTargetAtTime(eqBandGain(val), state.ctx.currentTime, 0.05);
+      if(state.eqNodes){
+        const node = state.eqNodes[bandIdx];
+        node.gain.setTargetAtTime(eqBandGain(val), state.ctx.currentTime, 0.05);
+        node.Q.setTargetAtTime(eqBandQ(val), state.ctx.currentTime, 0.05);
+      }
     }
     capEl.addEventListener('pointerdown', e=>{
       dragging=true; startY=e.clientY; startVal=val;
@@ -1486,6 +1525,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   function currentPanWidth(){ return lerp(0.05, 1.8, knobValues.panWidth/100); }
   function currentSeed(){ return knobValues.seed/100; } // 0..1
   function currentWetDry(){ return knobValues.wetDry/100; } // 0=dry, 1=wet
+  function currentMasterLp(){ return lerp(200, 18000, Math.pow(knobValues.masterLp/100, 2.5)); }
+  function currentMasterHp(){ return lerp(20, 2000, Math.pow(knobValues.masterHp/100, 2.5)); }
+  function currentResonance(){ return lerp(0.5, 12, Math.pow(knobValues.resonance/100, 2)); } // 0.5=flat, 12=screaming
+  function currentEqTilt(){ return lerp(-10, 10, knobValues.eqTilt/100); } // dB: neg=dark, pos=bright
+  function currentDrive(){ return lerp(0.8, 6.0, Math.pow(knobValues.drive/100, 2)); }
 
   // Seed-derived parameters — all deterministic from a single 0..1 value so
   // turning the knob moves the whole harmonic character coherently together.
@@ -1497,8 +1541,21 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   function seedDetune(){ return lerp(0.4, 2.2, currentSeed()); }
   // seedLfoRate: multiplier on filter/pan LFO speeds (0.4x slow → 2.0x fast)
   function seedLfoRate(){ return lerp(0.4, 2.0, currentSeed()); }
-  // graphic EQ: fader center (50) = 0dB, top = +12dB, bottom = -12dB
-  function eqBandGain(val){ return lerp(-12, 12, val/100); }
+  // graphic EQ: fader center (50) = 0dB, top = +12dB boost (musical),
+  // bottom = -45dB cut (practically inaudible at that band — not a gentle scoop)
+  function eqBandGain(val){
+    if(val >= 50){
+      return lerp(0, 12, (val-50)/50);
+    }
+    return lerp(-45, 0, val/50);
+  }
+  // Q narrows as the cut deepens so a fully-down fader acts like a surgical notch
+  // rather than a broad scoop that still lets adjacent frequencies leak through.
+  function eqBandQ(val){
+    if(val >= 50) return 1.4; // boosts stay musical/broad
+    const cutAmount = (50-val)/50; // 0 at center, 1 at full cut
+    return lerp(1.4, 5.5, cutAmount);
+  }
 
   // returns 0..1 — a slow tide that breathes the texture from sparse/static to active/dense.
   // at motion=0 it sits flat at 0.5 (today's steady behavior); higher motion widens the swing.
@@ -1564,13 +1621,6 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     compressor.attack.value = 0.08;
     compressor.release.value = 0.55;
 
-    const saturator = ctx.createWaveShaper();
-    saturator.curve = makeSaturationCurve(1.7);
-    saturator.oversample = '2x';
-
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 512;
-
     // ---- reverb built from current mood's character profile ----
     const [rvbDur, rvbDecay, rvbMod] = REVERB_CHARS[state.moodKey];
     const reverbSend = ctx.createGain();
@@ -1588,19 +1638,70 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       const f = ctx.createBiquadFilter();
       f.type = 'peaking';
       f.frequency.value = b.freq;
-      f.Q.value = 1.4;
+      f.Q.value = eqBandQ(b.val);
       f.gain.value = eqBandGain(b.val);
       return f;
     });
-    // chain them in series
+    // ---- master LP + HP filters with shared resonance ----
+    const masterLpFilter = ctx.createBiquadFilter();
+    masterLpFilter.type = 'lowpass';
+    masterLpFilter.frequency.value = currentMasterLp();
+    masterLpFilter.Q.value = currentResonance();
+
+    const masterHpFilter = ctx.createBiquadFilter();
+    masterHpFilter.type = 'highpass';
+    masterHpFilter.frequency.value = currentMasterHp();
+    masterHpFilter.Q.value = currentResonance();
+
+    // ---- EQ tilt: low shelf + high shelf moving in opposite directions ----
+    const tiltLow = ctx.createBiquadFilter();
+    tiltLow.type = 'lowshelf';
+    tiltLow.frequency.value = 200;
+    tiltLow.gain.value = -currentEqTilt(); // low shelf inverts: dark = boost lows
+
+    const tiltHigh = ctx.createBiquadFilter();
+    tiltHigh.type = 'highshelf';
+    tiltHigh.frequency.value = 3000;
+    tiltHigh.gain.value = currentEqTilt(); // high shelf: bright = boost highs
+
+    // ---- dynamic saturator (replaces static one) ----
+    const saturator = ctx.createWaveShaper();
+    saturator.curve = makeSaturationCurve(currentDrive());
+    saturator.oversample = '2x';
+
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+
+    // ---- stereo splitter for Lissajous — true L/R analysis, not a mono approximation ----
+    const splitter = ctx.createChannelSplitter(2);
+    const analyserL = ctx.createAnalyser();
+    const analyserR = ctx.createAnalyser();
+    analyserL.fftSize = 512;
+    analyserR.fftSize = 512;
+    splitter.connect(analyserL, 0);
+    splitter.connect(analyserR, 1);
+
+    // chain: masterGain → EQ bands → masterHP → masterLP → tiltLow → tiltHigh → saturator → analyser → out
     masterGain.connect(eqNodes[0]);
     for(let i=0;i<eqNodes.length-1;i++) eqNodes[i].connect(eqNodes[i+1]);
-    eqNodes[eqNodes.length-1].connect(compressor);
+    eqNodes[eqNodes.length-1].connect(masterHpFilter);
+    masterHpFilter.connect(masterLpFilter);
+    masterLpFilter.connect(tiltLow);
+    tiltLow.connect(tiltHigh);
+    tiltHigh.connect(compressor);
     compressor.connect(saturator);
     saturator.connect(analyser);
+    saturator.connect(splitter);
     analyser.connect(ctx.destination);
 
     state.eqNodes = eqNodes;
+    state.masterLpFilter = masterLpFilter;
+    state.masterHpFilter = masterHpFilter;
+    state.tiltLow = tiltLow;
+    state.tiltHigh = tiltHigh;
+    state.saturator = saturator;
+    state.analyserL = analyserL;
+    state.analyserR = analyserR;
 
     // ---- pad bus + ensemble chorus ----
     const padBus = ctx.createGain(); padBus.gain.value = 1;
@@ -1646,6 +1747,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     state.wetGain = wetGain;
     updateSpace();
     updateWetDry();
+    updateMasterLp();
+    updateMasterHp();
+    updateResonance();
+    updateEqTilt();
+    updateDrive();
   }
 
   function updateWetDry(){
@@ -2078,6 +2184,20 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   ];
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // viz modes — stored as index, name shown in menu
+  const VIZ_MODES = ['Orb','Scope','Spectrum','Bands','Lissajous','Constellation','Particles','Tide'];
+  let vizMode = 0; // default: Orb
+
+  // particle state for Particles mode
+  const particles = Array.from({length:60}, ()=>({
+    x:0.5, y:0.5, vx:(Math.random()-0.5)*0.004, vy:(Math.random()-0.5)*0.004,
+    life:Math.random(), size:Math.random()*2+1
+  }));
+
+  // Lissajous trail buffer
+  const lissTrail = [];
+  const LISS_MAX = 180;
+
   function resizeCanvas(){
     const rect = canvas.parentElement.getBoundingClientRect();
     canvas.width = rect.width; canvas.height = rect.height;
@@ -2097,13 +2217,23 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     return Math.sqrt(sum/buf.length);
   }
 
-  function drawFrame(t){
-    const w = canvas.width, h = canvas.height;
-    ctx2d.clearRect(0,0,w,h);
-    const color = MOODS[state.moodKey].color;
-    const level = state.isPlaying ? getLevel() : 0;
-    const pulse = 1 + level*2.2;
+  function getTimeDomain(){
+    if(!state.analyser) return new Uint8Array(256).fill(128);
+    const buf = new Uint8Array(state.analyser.fftSize);
+    state.analyser.getByteTimeDomainData(buf);
+    return buf;
+  }
 
+  function getFrequency(){
+    if(!state.analyser) return new Uint8Array(128).fill(0);
+    const buf = new Uint8Array(state.analyser.frequencyBinCount);
+    state.analyser.getByteFrequencyData(buf);
+    return buf;
+  }
+
+  // ---- draw: Orb (original) ----
+  function drawOrb(t, w, h, color, level){
+    const pulse = 1 + level*2.2;
     blobs.forEach((b)=>{
       const tt = t*0.001*b.speed + b.phase;
       const cx = w/2 + Math.sin(tt)*w*0.16;
@@ -2118,6 +2248,387 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       ctx2d.arc(cx,cy,r,0,Math.PI*2);
       ctx2d.fill();
     });
+  }
+
+  // smoothing buffer for Scope so it doesn't flicker on every frame
+  let scopeSmooth = null;
+
+  // ---- draw: Scope (oscilloscope waveform) ----
+  function drawScope(w, h, color){
+    const buf = getTimeDomain();
+    const cx = w/2, cy = h/2, r = w*0.42;
+
+    // downsample + smooth so the trace reads as a calm contour, not noise
+    const SAMPLES = 80;
+    if(!scopeSmooth) scopeSmooth = new Float32Array(SAMPLES);
+    const chunk = Math.floor(buf.length / SAMPLES);
+    for(let i=0; i<SAMPLES; i++){
+      let sum = 0;
+      for(let j=0; j<chunk; j++) sum += (buf[i*chunk+j]-128)/128;
+      const avg = sum/chunk;
+      // exponential smoothing across frames — kills the flicker
+      scopeSmooth[i] = scopeSmooth[i]*0.7 + avg*0.3;
+    }
+
+    ctx2d.save();
+    ctx2d.beginPath();
+    ctx2d.arc(cx, cy, r, 0, Math.PI*2);
+    ctx2d.clip();
+
+    // soft fill under the line for readability
+    ctx2d.beginPath();
+    ctx2d.moveTo(cx-r, cy);
+    for(let i=0; i<SAMPLES; i++){
+      const x = cx - r + (i/(SAMPLES-1)) * r*2;
+      const y = cy + scopeSmooth[i] * r * 0.65;
+      ctx2d.lineTo(x,y);
+    }
+    ctx2d.lineTo(cx+r, cy);
+    ctx2d.closePath();
+    ctx2d.fillStyle = color;
+    ctx2d.globalAlpha = 0.12;
+    ctx2d.fill();
+
+    // main trace line
+    ctx2d.beginPath();
+    for(let i=0; i<SAMPLES; i++){
+      const x = cx - r + (i/(SAMPLES-1)) * r*2;
+      const y = cy + scopeSmooth[i] * r * 0.65;
+      i===0 ? ctx2d.moveTo(x,y) : ctx2d.lineTo(x,y);
+    }
+    ctx2d.strokeStyle = color;
+    ctx2d.lineWidth = 2.5;
+    ctx2d.lineJoin = 'round';
+    ctx2d.lineCap = 'round';
+    ctx2d.shadowColor = color;
+    ctx2d.shadowBlur = 10;
+    ctx2d.globalAlpha = 1;
+    ctx2d.stroke();
+
+    ctx2d.restore();
+  }
+
+  let spectrumSmooth = null;
+
+  // ---- draw: Spectrum (radial FFT starburst) ----
+  function drawSpectrum(w, h, color){
+    const buf = getFrequency();
+    const cx = w/2, cy = h/2;
+    const innerR = w*0.14;
+    const outerR = w*0.46;
+    const bars = 48;
+    if(!spectrumSmooth) spectrumSmooth = new Float32Array(bars);
+
+    ctx2d.save();
+    ctx2d.shadowColor = color;
+    ctx2d.shadowBlur = 7;
+    for(let i=0; i<bars; i++){
+      const t = i/bars;
+      const angle = t * Math.PI * 2 - Math.PI/2;
+      // bias sampling toward lower/mid frequencies where pad energy actually lives
+      const binIdx = Math.floor(Math.pow(t, 1.6) * buf.length * 0.5);
+      const raw = buf[binIdx] / 255;
+      spectrumSmooth[i] = spectrumSmooth[i]*0.6 + raw*0.4;
+      const val = spectrumSmooth[i];
+      const minLen = (outerR-innerR)*0.06; // always show a faint ring even when quiet
+      const barLen = minLen + val * (outerR - innerR - minLen);
+      const x1 = cx + Math.cos(angle)*innerR;
+      const y1 = cy + Math.sin(angle)*innerR;
+      const x2 = cx + Math.cos(angle)*(innerR + barLen);
+      const y2 = cy + Math.sin(angle)*(innerR + barLen);
+      const alpha = 0.35 + val*0.65;
+      ctx2d.strokeStyle = color;
+      ctx2d.globalAlpha = alpha;
+      ctx2d.lineWidth = 3;
+      ctx2d.lineCap = 'round';
+      ctx2d.beginPath();
+      ctx2d.moveTo(x1,y1);
+      ctx2d.lineTo(x2,y2);
+      ctx2d.stroke();
+    }
+    // inner fill circle
+    ctx2d.globalAlpha = 0.18;
+    ctx2d.fillStyle = color;
+    ctx2d.beginPath();
+    ctx2d.arc(cx,cy,innerR,0,Math.PI*2);
+    ctx2d.fill();
+    ctx2d.restore();
+  }
+
+  let bandsSmooth = null;
+
+  // ---- draw: Bands (color-coded frequency spectrum) ----
+  // Same radial layout as Spectrum, but each bar's hue is mapped to its
+  // frequency: deep red/orange = bass, green/yellow = mids, cyan/violet = highs.
+  // Independent of mood colour so you can see frequency content directly.
+  function drawBands(w, h, color){
+    const buf = getFrequency();
+    const cx = w/2, cy = h/2;
+    const innerR = w*0.14;
+    const outerR = w*0.46;
+    const bars = 48;
+    if(!bandsSmooth) bandsSmooth = new Float32Array(bars);
+
+    ctx2d.save();
+    for(let i=0; i<bars; i++){
+      const t = i/bars; // 0 = bass, 1 = treble
+      const angle = t * Math.PI * 2 - Math.PI/2;
+      const binIdx = Math.floor(Math.pow(t, 1.6) * buf.length * 0.5);
+      const raw = buf[binIdx] / 255;
+      bandsSmooth[i] = bandsSmooth[i]*0.6 + raw*0.4;
+      const val = bandsSmooth[i];
+
+      // hue sweeps red(0°) → orange/yellow → green → cyan → blue → violet(280°) across the band range
+      const hue = lerp(0, 280, t);
+      const sat = 75;
+      const light = 50 + val*15;
+      const bandColor = `hsl(${hue}, ${sat}%, ${light}%)`;
+
+      const minLen = (outerR-innerR)*0.07;
+      const barLen = minLen + val * (outerR - innerR - minLen);
+      const x1 = cx + Math.cos(angle)*innerR;
+      const y1 = cy + Math.sin(angle)*innerR;
+      const x2 = cx + Math.cos(angle)*(innerR + barLen);
+      const y2 = cy + Math.sin(angle)*(innerR + barLen);
+
+      ctx2d.strokeStyle = bandColor;
+      ctx2d.shadowColor = bandColor;
+      ctx2d.shadowBlur = 6;
+      ctx2d.globalAlpha = 0.55 + val*0.45;
+      ctx2d.lineWidth = 3;
+      ctx2d.lineCap = 'round';
+      ctx2d.beginPath();
+      ctx2d.moveTo(x1,y1);
+      ctx2d.lineTo(x2,y2);
+      ctx2d.stroke();
+    }
+    // inner fill stays neutral so it doesn't fight the band colours
+    ctx2d.shadowBlur = 0;
+    ctx2d.globalAlpha = 0.12;
+    ctx2d.fillStyle = '#ffffff';
+    ctx2d.beginPath();
+    ctx2d.arc(cx,cy,innerR,0,Math.PI*2);
+    ctx2d.fill();
+    ctx2d.restore();
+  }
+
+  // ---- draw: Lissajous (XY stereo plot) ----
+  function drawLissajous(w, h, color){
+    const cx = w/2, cy = h/2, r = w*0.42;
+    if(!state.analyserL || !state.analyserR){
+      ctx2d.strokeStyle = color; ctx2d.globalAlpha = 0.15; ctx2d.lineWidth = 1;
+      ctx2d.beginPath(); ctx2d.arc(cx,cy,r,0,Math.PI*2); ctx2d.stroke();
+      return;
+    }
+    const bufL = new Uint8Array(state.analyserL.fftSize);
+    const bufR = new Uint8Array(state.analyserR.fftSize);
+    state.analyserL.getByteTimeDomainData(bufL);
+    state.analyserR.getByteTimeDomainData(bufR);
+
+    // sample several points per frame for a denser, more readable figure
+    const SAMPLES = 24;
+    const step = Math.floor(bufL.length / SAMPLES);
+    for(let i=0; i<SAMPLES; i++){
+      const idx = i*step;
+      lissTrail.push({
+        x: cx + ((bufL[idx]-128)/128) * r * 0.85,
+        y: cy + ((bufR[idx]-128)/128) * r * 0.85
+      });
+    }
+    while(lissTrail.length > LISS_MAX) lissTrail.shift();
+
+    ctx2d.save();
+    ctx2d.beginPath();
+    ctx2d.arc(cx,cy,r,0,Math.PI*2);
+    ctx2d.clip();
+    ctx2d.shadowColor = color;
+    ctx2d.shadowBlur = 10;
+    for(let i=1; i<lissTrail.length; i++){
+      const alpha = (i/lissTrail.length)*0.9;
+      ctx2d.strokeStyle = color;
+      ctx2d.globalAlpha = alpha;
+      ctx2d.lineWidth = 1.8;
+      ctx2d.lineCap = 'round';
+      ctx2d.beginPath();
+      ctx2d.moveTo(lissTrail[i-1].x, lissTrail[i-1].y);
+      ctx2d.lineTo(lissTrail[i].x, lissTrail[i].y);
+      ctx2d.stroke();
+    }
+    ctx2d.restore();
+  }
+
+  // ---- draw: Constellation (chord notes as stars on circle) ----
+  function drawConstellation(w, h, color){
+    const cx = w/2, cy = h/2, r = w*0.36;
+    const level = getLevel();
+    const voices = state.activeVoices;
+    if(!voices.length){
+      // idle: draw a simple ring
+      ctx2d.strokeStyle = color;
+      ctx2d.globalAlpha = 0.15;
+      ctx2d.lineWidth = 1;
+      ctx2d.beginPath();
+      ctx2d.arc(cx,cy,r,0,Math.PI*2);
+      ctx2d.stroke();
+      return;
+    }
+    // place each voice freq as a point on the circle
+    // map frequency to angle via log scale
+    const minFreq = 60, maxFreq = 4000;
+    const points = voices.map(v=>{
+      const logT = (Math.log(v.freq) - Math.log(minFreq)) / (Math.log(maxFreq) - Math.log(minFreq));
+      const angle = logT * Math.PI * 2 - Math.PI/2;
+      return {
+        x: cx + Math.cos(angle)*r,
+        y: cy + Math.sin(angle)*r,
+        angle
+      };
+    });
+    ctx2d.save();
+    ctx2d.shadowColor = color;
+    ctx2d.shadowBlur = 12;
+    // draw connecting lines
+    ctx2d.strokeStyle = color;
+    ctx2d.lineWidth = 1;
+    for(let i=0; i<points.length; i++){
+      for(let j=i+1; j<points.length; j++){
+        ctx2d.globalAlpha = 0.18 + level*0.3;
+        ctx2d.beginPath();
+        ctx2d.moveTo(points[i].x, points[i].y);
+        ctx2d.lineTo(points[j].x, points[j].y);
+        ctx2d.stroke();
+      }
+    }
+    // draw star dots
+    points.forEach(p=>{
+      const dotR = 2.5 + level*6;
+      const grad = ctx2d.createRadialGradient(p.x,p.y,0,p.x,p.y,dotR*2);
+      grad.addColorStop(0, color+'ff');
+      grad.addColorStop(1, color+'00');
+      ctx2d.globalAlpha = 0.9;
+      ctx2d.fillStyle = grad;
+      ctx2d.beginPath();
+      ctx2d.arc(p.x, p.y, dotR*2, 0, Math.PI*2);
+      ctx2d.fill();
+    });
+    // outer guide ring
+    ctx2d.globalAlpha = 0.08;
+    ctx2d.strokeStyle = color;
+    ctx2d.lineWidth = 1;
+    ctx2d.beginPath();
+    ctx2d.arc(cx,cy,r,0,Math.PI*2);
+    ctx2d.stroke();
+    ctx2d.restore();
+  }
+
+  // ---- draw: Particles (amplitude-reactive drifting dots) ----
+  function drawParticles(t, w, h, color){
+    const cx = w/2, cy = h/2, r = w*0.44;
+    const level = getLevel();
+    const energy = currentEnergy ? currentEnergy() : 0.5;
+    ctx2d.save();
+    ctx2d.beginPath();
+    ctx2d.arc(cx,cy,r,0,Math.PI*2);
+    ctx2d.clip();
+    ctx2d.shadowColor = color;
+    ctx2d.shadowBlur = 8;
+    particles.forEach(p=>{
+      p.x += p.vx * (1 + level*4 + energy*2);
+      p.y += p.vy * (1 + level*4 + energy*2);
+      p.life -= 0.003;
+      // wrap inside circle
+      const dx = p.x-0.5, dy = p.y-0.5;
+      if(dx*dx+dy*dy > 0.25 || p.life <= 0){
+        const a = Math.random()*Math.PI*2;
+        const initR = Math.random()*0.2;
+        p.x = 0.5 + Math.cos(a)*initR;
+        p.y = 0.5 + Math.sin(a)*initR;
+        p.vx = (Math.random()-0.5)*0.004;
+        p.vy = (Math.random()-0.5)*0.004;
+        p.life = 0.6 + Math.random()*0.4;
+        p.size = Math.random()*2.5+0.8;
+      }
+      const alpha = p.life * (0.5 + level*0.5);
+      const sz = p.size * (1 + level*3);
+      const px = cx + (p.x-0.5)*w;
+      const py = cy + (p.y-0.5)*h;
+      const grad = ctx2d.createRadialGradient(px,py,0,px,py,sz*2);
+      grad.addColorStop(0, color+'dd');
+      grad.addColorStop(1, color+'00');
+      ctx2d.globalAlpha = alpha;
+      ctx2d.fillStyle = grad;
+      ctx2d.beginPath();
+      ctx2d.arc(px,py,sz*2,0,Math.PI*2);
+      ctx2d.fill();
+    });
+    ctx2d.restore();
+  }
+
+  // ---- draw: Tide (energy waveform, rises with Motion) ----
+  function drawTide(t, w, h, color){
+    const cx = w/2, cy = h/2, r = w*0.44;
+    const energy = state.isPlaying ? currentEnergy() : 0.3;
+    const level = getLevel();
+    const buf = getTimeDomain();
+    ctx2d.save();
+    ctx2d.beginPath();
+    ctx2d.arc(cx,cy,r,0,Math.PI*2);
+    ctx2d.clip();
+
+    // fill tide level from bottom
+    const tideY = cy + r - (energy * r * 2 * 0.85);
+    const waveAmp = 5 + level*20;
+    const waveFreq = 3;
+
+    ctx2d.beginPath();
+    ctx2d.moveTo(cx-r, cy+r);
+    for(let x=0; x<=w; x+=2){
+      const wave = Math.sin((x/w)*Math.PI*waveFreq*2 + t*0.002) * waveAmp
+                 + Math.sin((x/w)*Math.PI*waveFreq*0.7 + t*0.0014) * waveAmp*0.4;
+      const wavY = buf ? tideY + ((buf[Math.floor(x/w*buf.length)]-128)/128)*waveAmp*0.8 + wave : tideY + wave;
+      x === 0 ? ctx2d.moveTo(cx-r+x, wavY) : ctx2d.lineTo(cx-r+x, wavY);
+    }
+    ctx2d.lineTo(cx+r, cy+r);
+    ctx2d.closePath();
+    const grad = ctx2d.createLinearGradient(0, tideY, 0, cy+r);
+    grad.addColorStop(0, color+'bb');
+    grad.addColorStop(1, color+'22');
+    ctx2d.fillStyle = grad;
+    ctx2d.globalAlpha = 0.7;
+    ctx2d.fill();
+
+    // energy readout text
+    ctx2d.globalAlpha = 0.6;
+    ctx2d.fillStyle = color;
+    ctx2d.font = `bold ${Math.round(w*0.1)}px JetBrains Mono, monospace`;
+    ctx2d.textAlign = 'center';
+    ctx2d.textBaseline = 'middle';
+    ctx2d.fillText(Math.round(energy*100)+'%', cx, cy+r*0.55);
+    ctx2d.restore();
+  }
+
+  // ---- master draw dispatcher ----
+  function drawFrame(t){
+    const w = canvas.width, h = canvas.height;
+    ctx2d.clearRect(0,0,w,h);
+    ctx2d.globalCompositeOperation = 'source-over';
+    ctx2d.globalAlpha = 1;
+    const color = MOODS[state.moodKey].color;
+    const level = state.isPlaying ? getLevel() : 0;
+
+    switch(VIZ_MODES[vizMode]){
+      case 'Orb':           drawOrb(t,w,h,color,level); break;
+      case 'Scope':         drawScope(w,h,color); break;
+      case 'Spectrum':      drawSpectrum(w,h,color); break;
+      case 'Bands':          drawBands(w,h,color); break;
+      case 'Lissajous':     drawLissajous(w,h,color); break;
+      case 'Constellation': drawConstellation(w,h,color); break;
+      case 'Particles':     drawParticles(t,w,h,color); break;
+      case 'Tide':          drawTide(t,w,h,color); break;
+    }
+
+    // always show the text readout on top (faded slightly for non-orb modes)
+    // (readout is in HTML overlay, not canvas — nothing needed here)
 
     if(!reduceMotion){
       animFrame = requestAnimationFrame(drawFrame);
@@ -2221,16 +2732,32 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const newBright   = rand(25, 85);
     const newEnsemble = rand(20, 80);
     const newRvbSend  = rand(20, 75);
+    const newWetDry   = rand(40, 95);
     const newTideRate = rand(20, 75);
     const newRelTime  = rand(20, 80);
     const newPanSprd  = rand(20, 80);
+    const newHarmRich = rand(20, 80);
+    const newVoicWid  = rand(20, 80);
     knobControllers.density.set(newDensity);
     knobControllers.brightness.set(newBright);
     knobControllers.chorus.set(newEnsemble);
     knobControllers.space.set(newRvbSend);
+    knobControllers.wetDry.set(newWetDry);
     knobControllers.motion.set(newTideRate);
     knobControllers.relTime.set(newRelTime);
     knobControllers.panSprd.set(newPanSprd);
+    knobControllers.harmRich.set(newHarmRich);
+    knobControllers.voicWidth.set(newVoicWid);
+    const newResonance = rand(0, 55);  // keep resonance sane — high values get wild
+    const newEqTilt    = rand(25, 75);
+    const newDrive     = rand(10, 70);
+    const newMasterHp  = rand(0, 40);
+    const newMasterLp  = rand(60, 100);
+    knobControllers.resonance.set(newResonance);
+    knobControllers.eqTilt.set(newEqTilt);
+    knobControllers.drive.set(newDrive);
+    knobControllers.masterHp.set(newMasterHp);
+    knobControllers.masterLp.set(newMasterLp);
     // retrigger chord so new density/rel time are heard quickly
     scheduleChordRetrigger();
   });
@@ -2277,14 +2804,42 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   }
 
   const MENU_TREE = [
+    { label:'Visualizer', special:'visualizer' },
     { label:'Tuning', special:'tuning' },
     { label:'System', items:[
-      { label:'Reset All',  key:'_reset'       },
+      { label:'Reset All', key:'_reset' },
     ]},
   ];
 
   const TUNING_LABELS = ['440 Hz','432 Hz','444 / 528'];
   const ms = { open:false, depth:0, rootIdx:0, catIdx:0 };
+
+  // Renders a vertically-centered window of list items inside the porthole circle.
+  // Only the selected item plus 1-2 neighbours above/below are shown, so long lists
+  // (like the 7 visualizer modes) never overflow the circular display.
+  function renderCenteredList(container, items, selectedIdx, getLabel, getChecked){
+    container.innerHTML = '';
+    const WINDOW = 2; // neighbours shown above and below the selected item
+    for(let offset = -WINDOW; offset <= WINDOW; offset++){
+      const idx = selectedIdx + offset;
+      const el = document.createElement('div');
+      if(idx < 0 || idx >= items.length){
+        // empty spacer keeps the selected item vertically centered even at list edges
+        el.className = 'menu-item';
+        el.style.visibility = 'hidden';
+        el.innerHTML = '&nbsp;';
+        container.appendChild(el);
+        continue;
+      }
+      const isSel = offset === 0;
+      const isAdjacent = Math.abs(offset) === 1;
+      el.className = 'menu-item' + (isSel ? ' sel' : '') + (isAdjacent ? ' adjacent' : '');
+      if(Math.abs(offset) >= 2) el.style.opacity = '0.18';
+      const checked = getChecked ? getChecked(idx) : false;
+      el.innerHTML = (isSel ? '<span class="menu-arrow">►</span>' : '') + getLabel(idx) + (checked ? '<span class="menu-val">✓</span>' : '');
+      container.appendChild(el);
+    }
+  }
 
   function menuRender(){
     menuItemsEl.innerHTML = '';
@@ -2293,33 +2848,22 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
     if(ms.depth === 0){
       menuTitle.textContent = 'CONFIGURE';
-      MENU_TREE.forEach((cat, i)=>{
-        const el = document.createElement('div');
-        el.className = 'menu-item' + (i===ms.rootIdx?' sel':'');
-        el.innerHTML = (i===ms.rootIdx?'<span class="menu-arrow">►</span>':'')+cat.label;
-        menuItemsEl.appendChild(el);
-      });
+      renderCenteredList(menuItemsEl, MENU_TREE, ms.rootIdx, i => MENU_TREE[i].label);
       encoderHint.textContent = '⊙ scroll · click to enter';
 
     } else if(ms.depth === 1){
       const cat = MENU_TREE[ms.rootIdx];
       menuTitle.textContent = cat.label.toUpperCase();
-      if(cat.special === 'tuning'){
-        TUNING_LABELS.forEach((lbl, i)=>{
-          const el = document.createElement('div');
-          el.className = 'menu-item' + (i===ms.catIdx?' sel':'');
-          el.innerHTML = (i===ms.catIdx?'<span class="menu-arrow">►</span>':'')+lbl+(tuningPos===i?'<span class="menu-val">✓</span>':'');
-          menuItemsEl.appendChild(el);
-        });
+      if(cat.special === 'visualizer'){
+        renderCenteredList(menuItemsEl, VIZ_MODES, ms.catIdx, i => VIZ_MODES[i], i => vizMode === i);
+        encoderHint.textContent = '⊙ scroll · click to select';
+      } else if(cat.special === 'tuning'){
+        renderCenteredList(menuItemsEl, TUNING_LABELS, ms.catIdx, i => TUNING_LABELS[i], i => tuningPos === i);
         encoderHint.textContent = '⊙ scroll · click to select';
       } else {
-        cat.items.forEach((item, i)=>{
-          const el = document.createElement('div');
-          el.className = 'menu-item' + (i===ms.catIdx?' sel':'');
-          const valStr = item.key==='_reset' ? '' : Math.round(knobValues[item.key]);
-          el.innerHTML = (i===ms.catIdx?'<span class="menu-arrow">►</span>':'')+item.label+(valStr!==''?'<span class="menu-val">'+valStr+'</span>':'');
-          menuItemsEl.appendChild(el);
-        });
+        renderCenteredList(menuItemsEl, cat.items, ms.catIdx,
+          i => cat.items[i].label + (cat.items[i].key==='_reset' ? '' : (' '+Math.round(knobValues[cat.items[i].key]))),
+        );
         encoderHint.textContent = '⊙ scroll · click to edit';
       }
 
@@ -2360,20 +2904,23 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     if(ms.depth === 0){
       ms.depth = 1; ms.catIdx = 0; updateBackBtn(); menuRender();
     } else if(ms.depth === 1){
-      if(cat.special === 'tuning'){
+      if(cat.special === 'visualizer'){
+        vizMode = ms.catIdx;
+        lissTrail.length = 0; // clear Lissajous trail on switch
+        menuClose();
+      } else if(cat.special === 'tuning'){
         setTuningPos(ms.catIdx); menuClose();
       } else {
         const item = cat.items[ms.catIdx];
         if(item.key === '_reset'){
-          Object.assign(knobValues, { voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60, brightness:50, chorus:55, density:45, space:50, volume:70, motion:55, seed:50, wetDry:75 });
-          knobControllers.harmRich.set(50);
-          knobControllers.voicWidth.set(40);
-          knobControllers.relTime.set(50);
-          knobControllers.panSprd.set(60);
-          knobControllers.brightness.set(50);
-          knobControllers.chorus.set(55);
-          knobControllers.seed.set(50);
-          knobControllers.wetDry.set(75);
+          Object.assign(knobValues, { voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60, brightness:50, chorus:55, density:45, space:50, volume:70, motion:55, seed:50, wetDry:75, masterLp:100, masterHp:0, resonance:0, eqTilt:50, drive:30 });
+          knobControllers.harmRich.set(50); knobControllers.voicWidth.set(40);
+          knobControllers.relTime.set(50);  knobControllers.panSprd.set(60);
+          knobControllers.brightness.set(50); knobControllers.chorus.set(55);
+          knobControllers.seed.set(50);     knobControllers.wetDry.set(75);
+          knobControllers.masterLp.set(100); knobControllers.masterHp.set(0);
+          knobControllers.resonance.set(0); knobControllers.eqTilt.set(50);
+          knobControllers.drive.set(30);
           menuClose();
         } else {
           ms.depth = 2; updateBackBtn(); menuRender();
@@ -2389,7 +2936,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     if(ms.depth === 0){
       ms.rootIdx = ((ms.rootIdx+delta)%MENU_TREE.length+MENU_TREE.length)%MENU_TREE.length;
     } else if(ms.depth === 1){
-      const len = cat.special==='tuning' ? 3 : cat.items.length;
+      const len = cat.special==='visualizer' ? VIZ_MODES.length
+               : cat.special==='tuning' ? 3
+               : cat.items.length;
       ms.catIdx = ((ms.catIdx+delta)%len+len)%len;
     } else if(ms.depth === 2){
       const item = cat.items[ms.catIdx];
