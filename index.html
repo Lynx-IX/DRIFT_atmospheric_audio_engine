@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRIFT — generative pad bed</title>
+<title>DRIFTWOOD — generative atmospheric pad engine</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -87,7 +87,7 @@ body{
 
 /* ---- nameplate / brand ---- */
 .nameplate{
-  text-align:center; margin-bottom:8px; position:relative; z-index:1;
+  text-align:center; margin-bottom:16px; position:relative; z-index:1;
   padding-bottom:8px;
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
@@ -111,7 +111,7 @@ body{
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:10px;
-  margin-bottom:10px; position:relative; z-index:1;
+  margin-bottom:10px; margin-top:14px; position:relative; z-index:1;
 }
 /* rotary wraps center themselves in their grid cell */
 .display-row .rotary-select-wrap{
@@ -232,19 +232,20 @@ body{
   background:var(--accent); box-shadow:0 0 8px var(--accent);
   transition:width 0.08s ease;
 }
-/* encoder hint below display */
 .encoder-hint{
-  font-family:'Oswald', sans-serif; font-size:0.58rem; letter-spacing:0.1em;
-  color:var(--engrave-dim); text-align:center;
-  position:relative; z-index:1; text-transform:uppercase;
-  transition:color 0.2s;
+  font-family:'JetBrains Mono', monospace; font-size:0.55rem; letter-spacing:0.08em;
+  color:var(--accent); text-transform:uppercase; text-align:center;
+  margin-top:8px; opacity:0.85;
 }
-.encoder-hint.active{ color:var(--accent); }
-.encoder-row{
-  display:flex; align-items:flex-end; justify-content:center; gap:16px;
-  margin-top:3px; margin-bottom:6px; position:relative; z-index:1;
+.encoder-unit{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  position:absolute; z-index:12;
+  /* anchored at the porthole's center (50%/50% of porthole-wrap, which
+     tightly wraps the porthole) then offset to match Lynx's Photoshop
+     mockup: ~106px right, ~85px down from center, porthole radius 90px */
+  top:calc(50% + 85px); left:calc(50% + 106px);
+  transform:translate(-50%, -50%);
 }
-.encoder-unit{ display:flex; flex-direction:column; align-items:center; gap:3px; }
 .encoder-btn{
   width:34px; height:34px; border-radius:50%; cursor:pointer; border:none;
   background:radial-gradient(circle at 34% 28%, var(--brass-light), var(--brass) 48%, var(--brass-dark));
@@ -262,19 +263,18 @@ body{
   box-shadow:0 1px 3px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.3);
   cursor:ns-resize;
 }
+/* brief flash confirming a long-press-back fired — there's no dedicated
+   Back button anymore, so this is the only feedback that the gesture
+   registered, which matters since there's no on-screen countdown for a
+   physical long-press */
+.encoder-btn.back-pulse{
+  box-shadow:0 3px 7px rgba(0,0,0,0.65), inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.3), 0 0 0 4px var(--accent);
+}
 .encoder-label{
   font-family:'Oswald', sans-serif; font-size:0.56rem; letter-spacing:0.09em;
   color:var(--engrave-dim); text-transform:uppercase;
+  white-space:nowrap;
 }
-.btn-back{
-  font-family:'Oswald', sans-serif; font-size:0.62rem; letter-spacing:0.06em;
-  text-transform:uppercase; padding:7px 13px; border-radius:5px; cursor:pointer;
-  background:linear-gradient(180deg, #263428, #1a2620);
-  border:1px solid rgba(0,0,0,0.5); color:var(--engrave-dim);
-  box-shadow:0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.2);
-  transition:color 0.15s, transform 0.1s, box-shadow 0.1s;
-}
-.btn-back:active{ transform:translateY(1px); box-shadow:0 1px 2px rgba(0,0,0,0.4); }
 .porthole-wrap{ display:flex; justify-content:center; position:relative; z-index:1; }
 .porthole{
   position:relative; width:min(180px, 38vw); aspect-ratio:1/1; border-radius:50%;
@@ -430,7 +430,7 @@ canvas#orb{
 /* ---------- mood buttons ---------- */
 .moods{
   display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
-  margin-top:2px; margin-bottom:10px; position:relative; z-index:1;
+  margin-top:26px; margin-bottom:10px; position:relative; z-index:1;
 }
 .mood-btn{
   position:relative;
@@ -735,8 +735,8 @@ canvas#orb{
   <span class="screw" style="bottom:12px;right:12px;"></span>
 
   <div class="nameplate">
-    <div class="brand">DRIFT</div>
-    <div class="model-line">Atmospheric Generator · Model D-1</div>
+    <div class="brand">DRIFTWOOD</div>
+    <div class="model-line">Generative Atmospheric Pad Engine</div>
   </div>
 
   <div class="display-row">
@@ -784,7 +784,15 @@ canvas#orb{
             <div class="menu-edit-val" id="menuEditVal"></div>
             <div class="menu-bar-track"><div class="menu-bar-fill" id="menuBarFill"></div></div>
           </div>
+          <div class="encoder-hint" id="encoderHint"></div>
         </div>
+      </div>
+      <!-- positioned relative to the porthole's true center, matching
+           Lynx's Photoshop mockup measurements: ~106px right, ~85px down
+           from center (porthole radius 90px) -->
+      <div class="encoder-unit">
+        <button class="encoder-btn" id="encoderBtn" aria-label="Menu encoder"></button>
+        <div class="encoder-label">Enter · hold to go back</div>
       </div>
     </div>
 
@@ -796,16 +804,6 @@ canvas#orb{
         </div>
       </div>
       <div class="rotary-caption">Scale</div>
-    </div>
-  </div>
-
-  <!-- encoder controls sit below the display row, outside the grid -->
-  <div class="encoder-hint" id="encoderHint">⊙ click display or Enter to configure</div>
-  <div class="encoder-row">
-    <button class="btn-back" id="btnBack">◄ Back</button>
-    <div class="encoder-unit">
-      <button class="encoder-btn" id="encoderBtn" aria-label="Menu encoder"></button>
-      <div class="encoder-label">Enter</div>
     </div>
   </div>
 
@@ -847,7 +845,7 @@ canvas#orb{
           <div class="knob-body"></div>
         </div>
       </div>
-      <div class="knob-label" title="How often random high twinkle hits decorate the pad — independent of Tide Rate. Zero is pure pad, full is glittery and alive.">Sparkle</div>
+      <div class="knob-label" title="How often random high twinkle hits decorate the pad — independent of Drift. Zero is pure pad, full is glittery and alive.">Sparkle</div>
     </div>
     <div class="knob-unit">
       <div class="knob-well">
@@ -896,11 +894,11 @@ canvas#orb{
     </div>
     <div class="knob-unit">
       <div class="knob-well">
-        <div class="knob" id="motionKnob" tabindex="0" role="slider" aria-label="Tide Rate" aria-valuemin="0" aria-valuemax="100">
+        <div class="knob" id="motionKnob" tabindex="0" role="slider" aria-label="Drift" aria-valuemin="0" aria-valuemax="100">
           <div class="knob-body"></div>
         </div>
       </div>
-      <div class="knob-label" title="Energy tide rate — controls movement speed, sparkle frequency and rhythmic breathing">Tide Rate</div>
+      <div class="knob-label" title="Energy drift rate — controls how widely the instrument's energy wanders over time, plus sparkle frequency and rhythmic breathing">Drift</div>
     </div>
   </div>
 
@@ -2732,7 +2730,7 @@ canvas#orb{
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // viz modes — stored as index, name shown in menu
-  const VIZ_MODES = ['Orb','Scope','Strata','Spectrum','Bands','Equalizer','Lissajous','Constellation','Particles','Tide'];
+  const VIZ_MODES = ['Orb','Scope','Strata','Spectrum','Bands','Equalizer','Lissajous','Constellation','Particles','Drift'];
   let vizMode = 0; // default: Orb
 
   // particle state for Particles mode
@@ -3313,7 +3311,7 @@ canvas#orb{
     ctx2d.restore();
   }
 
-  // ---- draw: Tide (energy waveform, rises with Motion) ----
+  // ---- draw: Drift visualizer (energy waveform, rises with the Drift knob) ----
   function drawTide(t, w, h, color){
     const cx = w/2, cy = h/2, r = w*0.44;
     const energy = state.isPlaying ? currentEnergy() : 0.3;
@@ -3446,7 +3444,7 @@ canvas#orb{
       case 'Lissajous':     drawLissajous(w,h,color); break;
       case 'Constellation': drawConstellation(w,h,color); break;
       case 'Particles':     drawParticles(t,w,h,color); break;
-      case 'Tide':          drawTide(t,w,h,color); break;
+      case 'Drift':          drawTide(t,w,h,color); break;
     }
 
     // always show the text readout on top (faded slightly for non-orb modes)
@@ -3617,14 +3615,6 @@ canvas#orb{
   const menuBarFill = $('menuBarFill');
   const encoderHint = $('encoderHint');
   const encoderBtn = $('encoderBtn');
-  const btnBack = $('btnBack');
-
-  function updateBackBtn(){ /* always visible on hardware */ }
-  function menuBack(){
-    if(!ms.open){ return; } // nothing to do if already on performance screen
-    if(ms.depth > 0){ ms.depth--; menuRender(); }
-    else { menuClose(); } // at root level → exit to performance screen
-  }
 
   const MENU_TREE = [
     { label:'Visualizer', special:'visualizer' },
@@ -3764,20 +3754,15 @@ canvas#orb{
   function menuOpen(){
     ms.open = true; ms.depth = 0; ms.rootIdx = 0; ms.catIdx = 0;
     porthole.classList.add('menu-open');
-    encoderHint.classList.add('active');
-    updateBackBtn();
     menuRender();
   }
   function menuClose(){
     ms.open = false;
     porthole.classList.remove('menu-open');
-    encoderHint.classList.remove('active');
-    encoderHint.textContent = '⊙ click to configure';
-    updateBackBtn();
   }
   function menuBack(){
     if(!ms.open) return;
-    if(ms.depth > 0){ ms.depth--; updateBackBtn(); menuRender(); }
+    if(ms.depth > 0){ ms.depth--; menuRender(); }
     else menuClose();
   }
   function menuClick(){
@@ -3789,14 +3774,14 @@ canvas#orb{
       // active mood, rather than always resetting to "Mood (default)" —
       // makes it obvious at a glance what's currently selected
       ms.catIdx = (cat.special === 'lightcolor') ? (lightColorByMood[state.moodKey]||0) : 0;
-      updateBackBtn(); menuRender();
+      menuRender();
     } else if(ms.depth === 1){
       if(cat.special === 'visualizer'){
         vizMode = ms.catIdx;
         lissTrail.length = 0; // clear Lissajous trail on switch
         menuClose();
       } else if(cat.special === 'clock'){
-        ms.depth = 2; updateBackBtn(); menuRender();
+        ms.depth = 2; menuRender();
       } else if(cat.special === 'tuning'){
         setTuningPos(ms.catIdx); menuClose();
       } else if(cat.special === 'lightcolor'){
@@ -3804,7 +3789,7 @@ canvas#orb{
         applyMoodUI(state.moodKey); // refreshes accent AND every button LED to match
         menuClose();
       } else if(cat.special === 'presets'){
-        ms.presetActionIdx = 0; ms.depth = 2; updateBackBtn(); menuRender();
+        ms.presetActionIdx = 0; ms.depth = 2; menuRender();
       } else {
         const item = cat.items[ms.catIdx];
         if(item.key === '_reset'){
@@ -3818,7 +3803,7 @@ canvas#orb{
           knobControllers.drive.set(30);
           menuClose();
         } else {
-          ms.depth = 2; updateBackBtn(); menuRender();
+          ms.depth = 2; menuRender();
         }
       }
     } else if(ms.depth === 2){
@@ -3840,7 +3825,7 @@ canvas#orb{
         menuClose();
         return;
       }
-      ms.depth = 1; updateBackBtn(); menuRender();
+      ms.depth = 1; menuRender();
     }
   }
   function menuScroll(delta){
@@ -3890,6 +3875,10 @@ canvas#orb{
   let _encAccum = 0;
   let _encJustOpened = false;
   const ENC_STEP_PX = 22; // px of drag per menu step
+  const ENC_HOLD_MS = 550; // long-press threshold for "go back one level"
+
+  let _encHoldTimer = null;
+  let _encHoldFired = false;
 
   encoderBtn.addEventListener('pointerdown', e=>{
     e.preventDefault();
@@ -3900,7 +3889,24 @@ canvas#orb{
     // track whether THIS press is the one opening the menu, so the
     // matching pointerup doesn't also act as a confirm/drill-in click
     _encJustOpened = !ms.open;
-    if(!ms.open) menuOpen();
+    if(!ms.open){
+      menuOpen();
+    } else {
+      // Long-press-to-back: only armed when the menu is already open (the
+      // press that opens the menu shouldn't also be eligible to back out of
+      // it — that would fire on the same gesture that just opened things).
+      // Cancelled the moment real drag movement is detected, same pattern
+      // as Seed's tap-to-toggle, so scrolling never accidentally backs out.
+      _encHoldFired = false;
+      _encHoldTimer = setTimeout(()=>{
+        if(!_encDragged){
+          menuBack();
+          _encHoldFired = true;
+          encoderBtn.classList.add('back-pulse');
+          setTimeout(()=>encoderBtn.classList.remove('back-pulse'), 180);
+        }
+      }, ENC_HOLD_MS);
+    }
   });
 
   encoderBtn.addEventListener('pointermove', e=>{
@@ -3914,22 +3920,28 @@ canvas#orb{
       _encAccum -= steps * ENC_STEP_PX;
       _encDragged = true;
       encoderBtn.classList.add('dragging');
+      // real scroll movement — cancel any pending long-press-back so
+      // scrolling through the menu never accidentally backs out of it
+      if(_encHoldTimer){ clearTimeout(_encHoldTimer); _encHoldTimer = null; }
     }
   });
 
   encoderBtn.addEventListener('pointerup', e=>{
     encoderBtn.classList.remove('dragging');
+    if(_encHoldTimer){ clearTimeout(_encHoldTimer); _encHoldTimer = null; }
     // if barely moved — treat as a confirm press, UNLESS this same press
     // is the one that just opened the menu (open and drill-in shouldn't
-    // happen in a single tap)
-    if(!_encDragged && !_encJustOpened) menuClick();
+    // happen in a single tap), OR the long-press-back already fired for
+    // this same press (don't also confirm/drill-in right after backing out)
+    if(!_encDragged && !_encJustOpened && !_encHoldFired) menuClick();
     _encJustOpened = false;
+    _encHoldFired = false;
   });
 
   encoderBtn.addEventListener('pointercancel', ()=>{
     encoderBtn.classList.remove('dragging');
+    if(_encHoldTimer){ clearTimeout(_encHoldTimer); _encHoldTimer = null; }
   });
-  btnBack.addEventListener('click', menuBack);
   let _tsy = 0;
   porthole.addEventListener('touchstart', e=>{ _tsy=e.touches[0].clientY; }, {passive:true});
   porthole.addEventListener('touchend', e=>{
