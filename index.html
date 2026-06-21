@@ -279,6 +279,7 @@ body{
 .porthole{
   position:relative; width:min(180px, 38vw); aspect-ratio:1/1; border-radius:50%;
   background:#050a07;
+  overflow:hidden; /* clips canvas glow (esp. Orb's blur) to the circle — light stays behind the glass, doesn't leak onto the panel */
   box-shadow:
     /* inner glass recession */
     inset 0 6px 18px rgba(0,0,0,0.9),
@@ -291,13 +292,15 @@ body{
     0 0 0 18px #0a0b08,
     0 4px 18px rgba(0,0,0,0.8);
 }
-canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px); }
+canvas#orb{
+  position:absolute; inset:3px; border-radius:50%;
+}
 .glass-glare{
   position:absolute; inset:0; border-radius:50%; pointer-events:none;
   background:linear-gradient(130deg, rgba(255,255,255,0.11) 0%, transparent 40%);
 }
 .readout{
-  position:relative; z-index:2; text-align:center;
+  position:absolute; inset:0; z-index:2; text-align:center;
   font-family:'JetBrains Mono', monospace;
   font-size:0.68rem; color:#f0eedd;
   text-shadow:
@@ -309,9 +312,20 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     1px 1px 0 rgba(0,0,0,0.8);
   letter-spacing:0.04em; line-height:1.75;
   pointer-events:none;
-  width:100%; height:100%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:padding 0.25s ease, font-size 0.25s ease, transform 0.25s ease;
 }
+/* Compact mode — applied when a structured visualizer (Scope, Equalizer, etc.)
+   is active. Pulls the readout up into the top third of the porthole and
+   shrinks it slightly so the visualizer itself has the lower 2/3 clear,
+   rather than text and waveform competing for the exact same center space. */
+.readout.compact{
+  justify-content:flex-start;
+  padding-top:14%;
+  font-size:0.6rem;
+  line-height:1.5;
+}
+.readout.compact .big{ font-size:0.78rem; }
 .readout .big{ font-size:0.92rem; letter-spacing:0.13em; }
 .readout .dim{ opacity:0.7; }
 .sync-indicator{
@@ -321,29 +335,38 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
 /* ---- value flash overlay — shows live knob/fader value over the porthole ---- */
 .value-flash{
-  position:absolute; inset:0; border-radius:50%; z-index:9;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:6px; padding:20px;
-  background:rgba(5,10,7,0.78);
+  position:absolute; left:50%; bottom:13%; z-index:9;
+  transform:translateX(-50%) translateY(6px);
+  display:flex; align-items:center; gap:8px;
+  padding:5px 12px;
+  border-radius:14px;
+  background:rgba(5,10,7,0.82);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 2px 8px rgba(0,0,0,0.5);
   opacity:0; pointer-events:none;
-  transition:opacity 0.15s ease;
+  transition:opacity 0.15s ease, transform 0.15s ease;
+  white-space:nowrap;
+  max-width:78%;
 }
-.value-flash.show{ opacity:1; }
+.value-flash.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 .value-flash-label{
-  font-family:'Oswald', sans-serif; font-size:0.7rem; letter-spacing:0.12em;
+  font-family:'Oswald', sans-serif; font-size:0.52rem; letter-spacing:0.1em;
   color:var(--accent); text-transform:uppercase;
-  text-shadow:0 0 8px var(--accent);
+  text-shadow:0 0 6px var(--accent);
+  flex-shrink:0;
 }
 .value-flash-val{
-  font-family:'JetBrains Mono', monospace; font-size:1.6rem; letter-spacing:0.04em;
-  color:#e8f0e0; text-shadow:0 0 12px rgba(84,178,158,0.7);
+  font-family:'JetBrains Mono', monospace; font-size:0.62rem; letter-spacing:0.03em;
+  color:#e8f0e0; text-shadow:0 0 6px rgba(84,178,158,0.6);
+  flex-shrink:0;
 }
 .value-flash-bar-track{
-  width:78%; height:5px; border-radius:3px; background:rgba(255,255,255,0.1);
+  width:36px; height:3px; border-radius:2px; background:rgba(255,255,255,0.12);
+  flex-shrink:0; overflow:hidden;
 }
 .value-flash-bar-fill{
-  height:100%; border-radius:3px;
-  background:var(--accent); box-shadow:0 0 8px var(--accent);
+  height:100%; border-radius:2px;
+  background:var(--accent); box-shadow:0 0 5px var(--accent);
   transition:width 0.05s ease;
 }
 
@@ -674,7 +697,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       <div class="porthole" id="porthole">
         <canvas id="orb"></canvas>
         <div class="glass-glare"></div>
-        <div class="readout">
+        <div class="readout" id="readout">
           <div class="dim" id="keyLabel">C · Nat Minor</div>
           <div class="big" id="moodLabel">FOUNDATIONAL</div>
           <div id="chordLabel">— · — · —</div>
@@ -753,11 +776,11 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     </div>
     <div class="knob-unit">
       <div class="knob-well">
-        <div class="knob" id="brightnessKnob" tabindex="0" role="slider" aria-label="LP Cutoff" aria-valuemin="0" aria-valuemax="100">
+        <div class="knob" id="sparkleKnob" tabindex="0" role="slider" aria-label="Sparkle Amount" aria-valuemin="0" aria-valuemax="100">
           <div class="knob-body"></div>
         </div>
       </div>
-      <div class="knob-label" title="Lowpass filter cutoff frequency applied to all pad voices">LP Cutoff</div>
+      <div class="knob-label" title="How often random high twinkle hits decorate the pad — independent of Tide Rate. Zero is pure pad, full is glittery and alive.">Sparkle</div>
     </div>
     <div class="knob-unit">
       <div class="knob-well">
@@ -1015,6 +1038,113 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     { label:'8 bars',     beats:32 },
   ];
 
+  // ---------- light color (per-mood display/light color) ----------
+  // Each mood remembers its OWN light color choice. Switching moods recalls
+  // that mood's assigned color across the entire panel — porthole visualizer,
+  // Engage glow, knob arcs, menu highlights, AND the mood buttons' own LEDs
+  // (full uniformity: every light on the board matches). Editing Light Color
+  // while a mood is active only reassigns that mood's color; the other three
+  // moods keep their own independent choices and you'll see them again when
+  // you switch back.
+  const LIGHT_COLORS = [
+    { label:'Mood (default)', hex:null },       // null = that mood's own native color
+    { label:'Emerald',  hex:'#54b29e' },
+    { label:'Ice Blue',  hex:'#bfe3ff' },
+    { label:'Amber',     hex:'#dba463' },
+    { label:'Violet',    hex:'#8b97d6' },
+    { label:'Rose',      hex:'#e08a9e' },
+    { label:'Cycle',     hex:'cycle' },          // hue rotates continuously over time
+  ];
+  // index into LIGHT_COLORS per mood key — all start at 0 (Mood/default = native color)
+  const lightColorByMood = { ethereal:0, contemplative:0, cinematic:0, foundational:0 };
+
+  // ---------- presets ----------
+  // 6 save slots, persisted to localStorage so they survive a page reload.
+  // Each slot captures everything needed to fully reproduce a sound: key,
+  // scale, mood, every knob value, all 8 EQ bands, tuning, and light color.
+  const PRESET_SLOTS = [0,1,2,3,4,5];
+  const PRESET_STORAGE_KEY = 'drift_presets_v1';
+  let presetData = [null,null,null,null,null,null];
+  try{
+    const stored = localStorage.getItem(PRESET_STORAGE_KEY);
+    if(stored) presetData = JSON.parse(stored);
+  }catch(e){ /* localStorage unavailable or corrupt — start fresh, don't crash */ }
+
+  function savePresetsToStorage(){
+    try{ localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(presetData)); }
+    catch(e){ /* storage full or unavailable — preset still works for this session */ }
+  }
+
+  function capturePresetSnapshot(){
+    return {
+      label: `${NOTE_NAMES[tonicValue]} ${SCALES[currentScaleKey].name}`,
+      tonic: tonicValue,
+      scale: scaleValue,
+      mood: state.moodKey,
+      knobValues: { ...knobValues },
+      eqBands: EQ_BANDS.map(b => b.val),
+      tuningPos: tuningPos,
+      lightColorByMood: { ...lightColorByMood }, // all 4 moods' color assignments
+      savedAt: Date.now()
+    };
+  }
+
+  function restorePresetSnapshot(snap){
+    knobControllers.tonic.set(snap.tonic);
+    knobControllers.scale.set(snap.scale);
+    if(snap.lightColorByMood) Object.assign(lightColorByMood, snap.lightColorByMood);
+    if(snap.mood !== state.moodKey){
+      state.moodKey = snap.mood;
+      applyMoodUI(state.moodKey);
+      if(state.isPlaying) triggerTransition();
+    } else {
+      applyMoodUI(state.moodKey); // refresh in case light colors changed even though mood didn't
+    }
+    Object.keys(snap.knobValues).forEach(key=>{
+      Object.assign(knobValues, { [key]: snap.knobValues[key] });
+      const ctrl = knobControllers[
+        // map knobValues keys to their controller names where they differ
+        key === 'voicingWidth' ? 'voicWidth' :
+        key === 'harmonicRich' ? 'harmRich' :
+        key === 'releaseScale' ? 'relTime' :
+        key === 'panWidth' ? 'panSprd' :
+        key === 'sparkleAmt' ? 'sparkle' :
+        key === 'volume' ? 'volume' :
+        key
+      ];
+      if(ctrl && ctrl.set) ctrl.set(snap.knobValues[key]);
+    });
+    snap.eqBands.forEach((val, i)=>{ if(faderControllers[i]) faderControllers[i].set(val); });
+    setTuningPos(snap.tuningPos);
+  }
+
+  // converts HSL to a hex string — needed because several visualizers append
+  // a hex alpha suffix directly onto the color string (e.g. color+'cc'),
+  // which only works correctly with '#rrggbb' format, not 'hsl(...)'
+  function hslToHex(h, s, l){
+    s/=100; l/=100;
+    const k = n => (n + h/30) % 12;
+    const a = s * Math.min(l, 1-l);
+    const f = n => l - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+    const toHex = x => Math.round(x*255).toString(16).padStart(2,'0');
+    return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
+  }
+
+  // returns the active hex color for a given mood, reading that mood's own
+  // assigned slot in lightColorByMood — each mood remembers its own choice
+  function currentLightColor(moodKey, tMs){
+    const moodColor = MOODS[moodKey].color;
+    const idx = lightColorByMood[moodKey] || 0;
+    const choice = LIGHT_COLORS[idx];
+    if(choice.hex === null) return moodColor;
+    if(choice.hex === 'cycle'){
+      // slow continuous hue rotation, ~24s per full revolution
+      const hue = ((tMs/24000) % 1) * 360;
+      return hslToHex(hue, 70, 62);
+    }
+    return choice.hex;
+  }
+
   function beatSeconds(){ return 60 / clockState.bpm; }
   function divisionSeconds(){
     return beatSeconds() * CLOCK_DIVISIONS[clockState.divisionIdx].beats;
@@ -1031,7 +1161,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   const knobValues = {
     density:45, brightness:50, space:50, volume:70, motion:55, chorus:55,
     voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60,
-    seed:50, wetDry:75, masterLp:100, masterHp:0, resonance:0, eqTilt:50, drive:30
+    seed:50, wetDry:75, masterLp:100, masterHp:0, resonance:0, eqTilt:50, drive:30,
+    sparkleAmt:50
   };
   const EQ_BANDS = [
     { id:'eq80',   freq:80,   val:50 },
@@ -1094,12 +1225,43 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       valueFlashEl.classList.remove('show');
     }, 700);
   }
+
+  // ---- EQ touch tracking — shared by Spectrum/Bands/Equalizer visualizers ----
+  // Smoothed FFT response alone is too gentle to clearly show an EQ fader
+  // move in the moment you make it. This records which band index was last
+  // touched and how recently, so the frequency-domain visualizers can give
+  // that exact bar an extra brightness pulse that fades over ~600ms —
+  // immediate visual confirmation that doesn't wait on the audio to catch up.
+  const eqTouch = { bandIdx: -1, time: 0 };
+  function markEqTouch(bandIdx){
+    eqTouch.bandIdx = bandIdx;
+    eqTouch.time = performance.now();
+  }
+  // returns 0..1 pulse strength for a given bar's t (0..1 position in the
+  // frequency sweep) — compares against the touched EQ band's own frequency
+  // position so the pulse lands on the right bar regardless of bar count
+  function eqTouchPulse(barT){
+    if(eqTouch.bandIdx < 0) return 0;
+    const elapsed = performance.now() - eqTouch.time;
+    if(elapsed > 600) return 0;
+    const decay = 1 - (elapsed/600);
+    // map the touched band's frequency to the same 0..1 t-space the bars use
+    const band = EQ_BANDS[eqTouch.bandIdx];
+    const bandT = Math.log(band.freq/80) / Math.log(10000/80); // 80Hz..10kHz log range
+    const dist = Math.abs(barT - bandT);
+    const proximity = Math.max(0, 1 - dist*6); // only nearby bars light up
+    return decay * proximity;
+  }
+
   // porthole element is referenced above before its own const declaration further
   // down the file — guard with a fallback so early calls don't throw
   let porthole = { classList:{ contains:()=>false } };
 
-  function setCSSAccent(color){
-    document.documentElement.style.setProperty('--accent', color);
+  function setCSSAccent(moodKey){
+    const displayColor = (typeof currentLightColor === 'function')
+      ? currentLightColor(moodKey, performance.now())
+      : MOODS[moodKey].color;
+    document.documentElement.style.setProperty('--accent', displayColor);
   }
 
   function applyMoodUI(key){
@@ -1107,9 +1269,12 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     moodButtons.forEach(btn=>{
       const active = btn.dataset.mood === key;
       btn.classList.toggle('active', active);
-      btn.style.setProperty('--mood-color', MOODS[btn.dataset.mood].color);
+      // each button's LED reflects ITS OWN assigned light color (full board
+      // uniformity), not always its fixed native hue — so if you've assigned
+      // Violet to Ethereal, the Ethereal button glows violet even when idle
+      btn.style.setProperty('--mood-color', currentLightColor(btn.dataset.mood, performance.now()));
     });
-    setCSSAccent(mood.color);
+    setCSSAccent(key);
     moodLabel.textContent = key.toUpperCase();
     if(knobControllers.space) knobControllers.space.set(mood.spaceDefault);
     else knobValues.space = mood.spaceDefault;
@@ -1275,20 +1440,16 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     min:0, max:100, initial:knobValues.density,
     onChange:v=>{ knobValues.density = v; scheduleChordRetrigger(); }
   });
-  knobControllers.brightness = createKnob($('brightnessKnob'), {
-    min:0, max:100, initial:knobValues.brightness,
-    onChange:v=>{
-      knobValues.brightness = v;
-      if(state.ctx){
-        const mult = currentBrightnessMult();
-        state.activeVoices.forEach(voice=>{
-          // update resting filter cutoff
-          voice.filter.frequency.setTargetAtTime(voice.baseCutoff * mult, state.ctx.currentTime, 0.3);
-          // scale filter LFO depth proportionally so movement feels consistent
-          voice.lfoGain.gain.setTargetAtTime(MOODS[state.moodKey].movement * mult * 0.5, state.ctx.currentTime, 0.3);
-        });
-      }
-    }
+  // Sparkle replaces the old LP Cutoff knob — LP Cutoff was found to be
+  // functionally redundant with Mst LP (any time Mst LP is pulled down from
+  // its wide-open default, it caps the signal and LP Cutoff's effect becomes
+  // inaudible — measured ~1.4x energy difference with Mst LP open, ~1.0x i.e.
+  // no difference with Mst LP partially closed). knobValues.brightness stays
+  // fixed at its original default internally so per-voice filter behavior is
+  // unchanged; only the panel control was swapped out.
+  knobControllers.sparkle = createKnob($('sparkleKnob'), {
+    min:0, max:100, initial:knobValues.sparkleAmt,
+    onChange:v=>{ knobValues.sparkleAmt = v; }
   });
   knobControllers.space = createKnob($('spaceKnob'), {
     min:0, max:100, initial:knobValues.space,
@@ -1430,6 +1591,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
         const gainDb = Math.round(eqBandGain(val)*10)/10;
         const sign = gainDb > 0 ? '+' : '';
         showValueFlash('EQ ' + freqLabel, sign + gainDb + 'dB', val);
+        markEqTouch(bandIdx);
       }
     }
     capEl.addEventListener('pointerdown', e=>{
@@ -1450,12 +1612,14 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     }, {passive:false});
 
     render();
+    return { set:(v)=>update(v, false) };
   }
 
   // init faders after DOM is ready
+  const faderControllers = [];
   setTimeout(()=>{
     document.querySelectorAll('.fader-cap').forEach((cap, i)=>{
-      createFader(cap, i);
+      faderControllers[i] = createFader(cap, i);
     });
   }, 0);
   // ---- detent click — tiny mechanical tick on each step ----
@@ -1533,7 +1697,18 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       if(e.key==='ArrowDown'||e.key==='ArrowLeft'){ e.preventDefault(); applyRot(rotDeg-degsPerStep); }
     });
     render();
-    return { get:()=>value };
+    return {
+      get:()=>value,
+      // Used by preset restore — jumps straight to a value without animating
+      // through every intermediate detent click, and fires onChange so the
+      // label/highlight UI updates to match.
+      set:(v)=>{
+        value = ((v % numSteps) + numSteps) % numSteps;
+        rotDeg = value * degsPerStep;
+        render();
+        onChange(value);
+      }
+    };
   }
 
   knobControllers.tonic = createEndlessRotary($('tonicKnob'), 12, tonicValue, 14,
@@ -1644,6 +1819,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   function currentSpace(){ return knobValues.space/100; }
   function currentVolume(){ return knobValues.volume/100; }
   function currentMotion(){ return knobValues.motion/100; }
+  // sparkle multiplier: 0 = no sparkles ever, 1 (default=50) = mood's natural rate,
+  // 2 = double the mood's natural sparkle rate. Independent of Motion entirely.
+  function currentSparkleAmt(){ return lerp(0, 2, knobValues.sparkleAmt/100); }
   function currentChorus(){ return lerp(0, 0.85, knobValues.chorus/100); }
   function currentVoicingWidth(){ return knobValues.voicingWidth/100; }
   function currentHarmonicRich(){ return lerp(0.15, 2.0, knobValues.harmonicRich/100); }
@@ -2310,8 +2488,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     if(!state.isPlaying) return;
     const mood = MOODS[state.moodKey];
     const motion = currentMotion();
-    const chance = mood.sparkleChance * lerp(0.25, 1.7, motion);
-    if(Math.random() < chance) triggerSparkle();
+    const sparkleAmt = currentSparkleAmt();
+    const chance = mood.sparkleChance * lerp(0.25, 1.7, motion) * sparkleAmt;
+    if(sparkleAmt > 0.001 && Math.random() < chance) triggerSparkle();
     const next = rand(4, 9);
     const t = setTimeout(scheduleSparkleCheck, next*1000);
     state.timers.push(t);
@@ -2327,7 +2506,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // viz modes — stored as index, name shown in menu
-  const VIZ_MODES = ['Orb','Scope','Spectrum','Bands','Lissajous','Constellation','Particles','Tide'];
+  const VIZ_MODES = ['Orb','Scope','Spectrum','Bands','Equalizer','Lissajous','Constellation','Particles','Tide'];
   let vizMode = 0; // default: Orb
 
   // particle state for Particles mode
@@ -2341,8 +2520,27 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   const LISS_MAX = 180;
 
   function resizeCanvas(){
-    const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width; canvas.height = rect.height;
+    // <canvas> is a CSS "replaced element": its HTML width/height ATTRIBUTES
+    // define an intrinsic box size that the browser uses directly, independent
+    // of CSS positioning. Without those attributes set to the right numbers,
+    // a canvas defaults to 300×150 and `inset:11px` only POSITIONS it — it
+    // does not shrink a replaced element's box to fit. Confirmed via direct
+    // Playwright DOM measurement that this default-size mismatch was the
+    // actual root cause behind every gap/centering issue in this file.
+    //
+    // Fix: compute the target size from the porthole's own box minus the
+    // known 11px inset on each side (NOT from canvas.getBoundingClientRect(),
+    // since before this fix runs the canvas is still sitting at its wrong
+    // default size and would report incorrect numbers back to itself).
+    const INSET = 3; // must match canvas#orb's CSS inset value exactly
+    const portholeEl = document.getElementById('porthole');
+    const portholeRect = portholeEl.getBoundingClientRect();
+    const cssW = portholeRect.width - INSET*2;
+    const cssH = portholeRect.height - INSET*2;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
@@ -2398,34 +2596,45 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   // ---- draw: Scope (oscilloscope waveform) ----
   function drawScope(w, h, color){
     const buf = getTimeDomain();
-    const cx = w/2, cy = h/2, r = w*0.42;
+    // Derive geometry directly and identically for both the clip path and the
+    // line path in the same breath, using the same w/h/cx/cy/r values with no
+    // intermediate steps — removes any chance the fill/stroke paths or the
+    // clip circle could end up computed against subtly different numbers.
+    const cx = w/2, cy = h/2;
+    // clip circle stays slightly inside the canvas edge so nothing gets cut off harshly
+    const clipR = Math.min(w, h) * 0.49;
+    // the wave itself spans the full canvas diameter — edge to edge of the porthole
+    const waveR = Math.min(w, h) * 0.5;
 
-    // downsample + smooth so the trace reads as a calm contour, not noise
     const SAMPLES = 80;
     if(!scopeSmooth) scopeSmooth = new Float32Array(SAMPLES);
-    const chunk = Math.floor(buf.length / SAMPLES);
+    const chunk = Math.max(1, Math.floor(buf.length / SAMPLES));
     for(let i=0; i<SAMPLES; i++){
       let sum = 0;
       for(let j=0; j<chunk; j++) sum += (buf[i*chunk+j]-128)/128;
       const avg = sum/chunk;
-      // exponential smoothing across frames — kills the flicker
       scopeSmooth[i] = scopeSmooth[i]*0.7 + avg*0.3;
+    }
+
+    // precompute every point once, shared by fill and stroke so they're
+    // pixel-identical and genuinely span the full diameter, cx-waveR to cx+waveR
+    const pts = [];
+    for(let i=0; i<SAMPLES; i++){
+      const x = cx - waveR + (i/(SAMPLES-1)) * (waveR*2);
+      const y = cy + scopeSmooth[i] * waveR * 0.6;
+      pts.push([x,y]);
     }
 
     ctx2d.save();
     ctx2d.beginPath();
-    ctx2d.arc(cx, cy, r, 0, Math.PI*2);
+    ctx2d.arc(cx, cy, clipR, 0, Math.PI*2);
     ctx2d.clip();
 
-    // soft fill under the line for readability
+    // soft fill under the line
     ctx2d.beginPath();
-    ctx2d.moveTo(cx-r, cy);
-    for(let i=0; i<SAMPLES; i++){
-      const x = cx - r + (i/(SAMPLES-1)) * r*2;
-      const y = cy + scopeSmooth[i] * r * 0.65;
-      ctx2d.lineTo(x,y);
-    }
-    ctx2d.lineTo(cx+r, cy);
+    ctx2d.moveTo(pts[0][0], cy);
+    pts.forEach(([x,y])=>ctx2d.lineTo(x,y));
+    ctx2d.lineTo(pts[pts.length-1][0], cy);
     ctx2d.closePath();
     ctx2d.fillStyle = color;
     ctx2d.globalAlpha = 0.12;
@@ -2433,11 +2642,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
     // main trace line
     ctx2d.beginPath();
-    for(let i=0; i<SAMPLES; i++){
-      const x = cx - r + (i/(SAMPLES-1)) * r*2;
-      const y = cy + scopeSmooth[i] * r * 0.65;
-      i===0 ? ctx2d.moveTo(x,y) : ctx2d.lineTo(x,y);
-    }
+    pts.forEach(([x,y], i)=> i===0 ? ctx2d.moveTo(x,y) : ctx2d.lineTo(x,y));
     ctx2d.strokeStyle = color;
     ctx2d.lineWidth = 2.5;
     ctx2d.lineJoin = 'round';
@@ -2460,6 +2665,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const outerR = w*0.46;
     const bars = 48;
     if(!spectrumSmooth) spectrumSmooth = new Float32Array(bars);
+    // see note in drawEqualizer — AnalyserNode doesn't scale linearly with
+    // actual output level, so we apply the real Output knob value directly
+    const outputScale = currentVolume();
 
     ctx2d.save();
     ctx2d.shadowColor = color;
@@ -2469,9 +2677,10 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       const angle = t * Math.PI * 2 - Math.PI/2;
       // bias sampling toward lower/mid frequencies where pad energy actually lives
       const binIdx = Math.floor(Math.pow(t, 1.6) * buf.length * 0.5);
-      const raw = buf[binIdx] / 255;
-      spectrumSmooth[i] = spectrumSmooth[i]*0.6 + raw*0.4;
-      const val = spectrumSmooth[i];
+      const raw = (buf[binIdx] / 255) * outputScale;
+      spectrumSmooth[i] = spectrumSmooth[i]*0.4 + raw*0.6;
+      const pulse = eqTouchPulse(t);
+      const val = Math.min(1, spectrumSmooth[i] + pulse*0.5);
       const minLen = (outerR-innerR)*0.06; // always show a faint ring even when quiet
       const barLen = minLen + val * (outerR - innerR - minLen);
       const x1 = cx + Math.cos(angle)*innerR;
@@ -2481,7 +2690,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       const alpha = 0.35 + val*0.65;
       ctx2d.strokeStyle = color;
       ctx2d.globalAlpha = alpha;
-      ctx2d.lineWidth = 3;
+      ctx2d.lineWidth = 3 + pulse*2.5; // touched band draws thicker too — unmissable
       ctx2d.lineCap = 'round';
       ctx2d.beginPath();
       ctx2d.moveTo(x1,y1);
@@ -2510,20 +2719,24 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const outerR = w*0.46;
     const bars = 48;
     if(!bandsSmooth) bandsSmooth = new Float32Array(bars);
+    // see note in drawEqualizer — scale by real Output level so this genuinely
+    // goes quiet when Output is turned down, not just relative spectral shape
+    const outputScale = currentVolume();
 
     ctx2d.save();
     for(let i=0; i<bars; i++){
       const t = i/bars; // 0 = bass, 1 = treble
       const angle = t * Math.PI * 2 - Math.PI/2;
       const binIdx = Math.floor(Math.pow(t, 1.6) * buf.length * 0.5);
-      const raw = buf[binIdx] / 255;
-      bandsSmooth[i] = bandsSmooth[i]*0.6 + raw*0.4;
-      const val = bandsSmooth[i];
+      const raw = (buf[binIdx] / 255) * outputScale;
+      bandsSmooth[i] = bandsSmooth[i]*0.4 + raw*0.6;
+      const pulse = eqTouchPulse(t);
+      const val = Math.min(1, bandsSmooth[i] + pulse*0.5);
 
       // hue sweeps red(0°) → orange/yellow → green → cyan → blue → violet(280°) across the band range
       const hue = lerp(0, 280, t);
       const sat = 75;
-      const light = 50 + val*15;
+      const light = 50 + val*15 + pulse*20; // touched band flashes brighter
       const bandColor = `hsl(${hue}, ${sat}%, ${light}%)`;
 
       const minLen = (outerR-innerR)*0.07;
@@ -2535,9 +2748,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
       ctx2d.strokeStyle = bandColor;
       ctx2d.shadowColor = bandColor;
-      ctx2d.shadowBlur = 6;
+      ctx2d.shadowBlur = 6 + pulse*10;
       ctx2d.globalAlpha = 0.55 + val*0.45;
-      ctx2d.lineWidth = 3;
+      ctx2d.lineWidth = 3 + pulse*2.5;
       ctx2d.lineCap = 'round';
       ctx2d.beginPath();
       ctx2d.moveTo(x1,y1);
@@ -2554,9 +2767,97 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     ctx2d.restore();
   }
 
+  // peak-hold state for Equalizer mode — one falling peak marker per bar
+  let eqBarSmooth = null;
+  let eqPeaks = null;
+
+  // ---- draw: Equalizer (sharp segmented LED-style bar meter) ----
+  // Straight vertical bars, hard segment divisions, falling peak-hold caps.
+  // Designed to read as crisp detail rather than a soft glow — the opposite
+  // visual register from Orb/Spectrum/Bands.
+  function drawEqualizer(w, h, color){
+    const buf = getFrequency();
+    const BAR_COUNT = 16;
+    if(!eqBarSmooth) eqBarSmooth = new Float32Array(BAR_COUNT);
+    if(!eqPeaks) eqPeaks = new Float32Array(BAR_COUNT);
+
+    // clip to a centered square inscribed in the circle so bars don't get
+    // cut off awkwardly at the round edge
+    const r = Math.min(w,h)*0.42;
+    const boxW = r*1.55, boxH = r*1.5;
+    const left = w/2 - boxW/2, top = h/2 - boxH/2;
+    const gap = 2;
+    const barW = (boxW - gap*(BAR_COUNT-1)) / BAR_COUNT;
+    const SEGMENTS = 12;
+    const segH = boxH / SEGMENTS;
+    const segGap = 1.5;
+
+    ctx2d.save();
+    // clip to the circle so nothing draws outside the porthole glass
+    ctx2d.beginPath();
+    ctx2d.arc(w/2, h/2, r*1.05, 0, Math.PI*2);
+    ctx2d.clip();
+
+    // The AnalyserNode reads frequency content using a fixed dB window
+    // (-100dB to -30dB by default) and isn't a true linear loudness meter —
+    // a quiet signal can still show tall relative bars even with Output
+    // turned way down, since the analyser normalizes within that window
+    // regardless of actual playback level. Scale by the real Output knob
+    // position so the meter genuinely goes quiet when Output is turned down,
+    // matching what a real hardware meter monitoring the final stage would do.
+    const outputScale = currentVolume();
+
+    for(let i=0; i<BAR_COUNT; i++){
+      const t = i/(BAR_COUNT-1);
+      // bias toward low/mid frequencies where pad energy lives, same curve as Spectrum/Bands
+      const binIdx = Math.floor(Math.pow(t, 1.6) * buf.length * 0.5);
+      const raw = (buf[binIdx] / 255) * outputScale;
+      eqBarSmooth[i] = eqBarSmooth[i]*0.4 + raw*0.6;
+      const pulse = eqTouchPulse(t);
+      const val = Math.min(1, eqBarSmooth[i] + pulse*0.5);
+
+      // falling peak hold
+      if(val > eqPeaks[i]) eqPeaks[i] = val;
+      else eqPeaks[i] = Math.max(0, eqPeaks[i] - 0.012);
+
+      const litSegments = Math.round(val * SEGMENTS);
+      const peakSegment = Math.round(eqPeaks[i] * SEGMENTS);
+      const x = left + i*(barW+gap);
+
+      for(let s=0; s<SEGMENTS; s++){
+        const segFromBottom = s;
+        const y = top + boxH - (segFromBottom+1)*segH + segGap/2;
+        const segHeight = segH - segGap;
+        const isLit = segFromBottom < litSegments;
+        // colour ramps: lower segments green/mood colour, upper segments warn amber/red —
+        // classic VU meter convention, gives bars real internal detail and gradation
+        const segT = segFromBottom / SEGMENTS;
+        let segColor;
+        if(segT > 0.82) segColor = '#e85b4a';       // red — peak zone
+        else if(segT > 0.62) segColor = '#dba463';  // amber — hot
+        else segColor = color;                       // mood colour — normal range
+
+        ctx2d.fillStyle = segColor;
+        // touched bar's unlit segments glow faintly too, so the whole column reads as "active"
+        const baseAlpha = isLit ? 0.95 : 0.08;
+        ctx2d.globalAlpha = isLit ? baseAlpha : Math.min(0.4, baseAlpha + pulse*0.35);
+        ctx2d.fillRect(x, y, barW, segHeight);
+      }
+
+      // peak-hold cap — a bright single segment marking the recent maximum
+      if(peakSegment > 0 && peakSegment <= SEGMENTS){
+        const py = top + boxH - peakSegment*segH;
+        ctx2d.fillStyle = '#ffffff';
+        ctx2d.globalAlpha = 0.85;
+        ctx2d.fillRect(x, py - 1.5, barW, 2);
+      }
+    }
+    ctx2d.restore();
+  }
+
   // ---- draw: Lissajous (XY stereo plot) ----
   function drawLissajous(w, h, color){
-    const cx = w/2, cy = h/2, r = w*0.42;
+    const cx = w/2, cy = h/2, r = w*0.48;
     if(!state.analyserL || !state.analyserR){
       ctx2d.strokeStyle = color; ctx2d.globalAlpha = 0.15; ctx2d.lineWidth = 1;
       ctx2d.beginPath(); ctx2d.arc(cx,cy,r,0,Math.PI*2); ctx2d.stroke();
@@ -2573,8 +2874,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     for(let i=0; i<SAMPLES; i++){
       const idx = i*step;
       lissTrail.push({
-        x: cx + ((bufL[idx]-128)/128) * r * 0.85,
-        y: cy + ((bufR[idx]-128)/128) * r * 0.85
+        x: cx + ((bufL[idx]-128)/128) * r * 0.95,
+        y: cy + ((bufR[idx]-128)/128) * r * 0.95
       });
     }
     while(lissTrail.length > LISS_MAX) lissTrail.shift();
@@ -2751,18 +3052,43 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
 
   // ---- master draw dispatcher ----
   function drawFrame(t){
-    const w = canvas.width, h = canvas.height;
+    // Use CSS-pixel dimensions, not the raw backing-buffer size — ctx2d already
+    // has a devicePixelRatio scale transform applied via resizeCanvas(), so all
+    // drawing math (w/2, h/2, radii, etc.) should work in CSS pixels. Using the
+    // raw canvas.width/height here would double-count the DPR scaling.
+    const w = canvas.width / (window.devicePixelRatio || 1);
+    const h = canvas.height / (window.devicePixelRatio || 1);
     ctx2d.clearRect(0,0,w,h);
     ctx2d.globalCompositeOperation = 'source-over';
     ctx2d.globalAlpha = 1;
-    const color = MOODS[state.moodKey].color;
+    const color = currentLightColor(state.moodKey, performance.now());
     const level = state.isPlaying ? getLevel() : 0;
+    const mode = VIZ_MODES[vizMode];
 
-    switch(VIZ_MODES[vizMode]){
+    // Keep --accent (and the active mood button's own LED, for Cycle) in sync
+    // every frame. This is what makes the rest of the panel (Engage glow,
+    // menu highlights, knob arcs, value-flash pill, mood button LEDs) match
+    // the visualizer color too — not just the porthole canvas. Only needed
+    // when this mood's assigned color isn't "Mood" (index 0, native color);
+    // when it IS native, applyMoodUI() already keeps everything correct and
+    // we skip the redundant per-frame style write.
+    if((lightColorByMood[state.moodKey]||0) !== 0){
+      document.documentElement.style.setProperty('--accent', color);
+      const activeBtn = document.querySelector(`.mood-btn[data-mood="${state.moodKey}"]`);
+      if(activeBtn) activeBtn.style.setProperty('--mood-color', color);
+    }
+
+    // Orb is the only mode designed around a soft diffuse glow — the blur
+    // belongs to it specifically, not to the canvas globally. Every other
+    // visualizer (Scope, Equalizer, Bands, etc.) wants crisp, unblurred detail.
+    canvas.style.filter = (mode === 'Orb') ? 'blur(15px)' : 'none';
+
+    switch(mode){
       case 'Orb':           drawOrb(t,w,h,color,level); break;
       case 'Scope':         drawScope(w,h,color); break;
       case 'Spectrum':      drawSpectrum(w,h,color); break;
       case 'Bands':          drawBands(w,h,color); break;
+      case 'Equalizer':      drawEqualizer(w,h,color); break;
       case 'Lissajous':     drawLissajous(w,h,color); break;
       case 'Constellation': drawConstellation(w,h,color); break;
       case 'Particles':     drawParticles(t,w,h,color); break;
@@ -2871,7 +3197,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     setTimeout(()=>rndTexBtn.classList.remove('flash'), 150);
     // randomize texture parameters — harmonic content (key/scale/mood/seed) untouched
     const newDensity  = rand(20, 80);
-    const newBright   = rand(25, 85);
+    const newSparkle  = rand(15, 90);
     const newEnsemble = rand(20, 80);
     const newRvbSend  = rand(20, 75);
     const newWetDry   = rand(40, 95);
@@ -2881,7 +3207,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     const newHarmRich = rand(20, 80);
     const newVoicWid  = rand(20, 80);
     knobControllers.density.set(newDensity);
-    knobControllers.brightness.set(newBright);
+    knobControllers.sparkle.set(newSparkle);
     knobControllers.chorus.set(newEnsemble);
     knobControllers.space.set(newRvbSend);
     knobControllers.wetDry.set(newWetDry);
@@ -2949,7 +3275,9 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   const MENU_TREE = [
     { label:'Visualizer', special:'visualizer' },
     { label:'Clock', special:'clock' },
+    { label:'Presets', special:'presets' },
     { label:'Tuning', special:'tuning' },
+    { label:'Light Color', special:'lightcolor' },
     { label:'System', items:[
       { label:'Reset All', key:'_reset' },
     ]},
@@ -3016,6 +3344,15 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       } else if(cat.special === 'tuning'){
         renderCenteredList(menuItemsEl, TUNING_LABELS, ms.catIdx, i => TUNING_LABELS[i], i => tuningPos === i);
         encoderHint.textContent = '⊙ scroll · click to select';
+      } else if(cat.special === 'lightcolor'){
+        renderCenteredList(menuItemsEl, LIGHT_COLORS, ms.catIdx, i => LIGHT_COLORS[i].label, i => (lightColorByMood[state.moodKey]||0) === i);
+        encoderHint.textContent = '⊙ scroll · click to select';
+      } else if(cat.special === 'presets'){
+        renderCenteredList(menuItemsEl, PRESET_SLOTS, ms.catIdx, i => {
+          const slot = presetData[i];
+          return `Slot ${i+1}` + (slot ? '' : ' (empty)');
+        });
+        encoderHint.textContent = '⊙ scroll · click to open';
       } else {
         renderCenteredList(menuItemsEl, cat.items, ms.catIdx,
           i => cat.items[i].label + (cat.items[i].key==='_reset' ? '' : (' '+Math.round(knobValues[cat.items[i].key]))),
@@ -3047,6 +3384,16 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
           menuBarFill.style.width = (((clockState.divisionIdx)/(CLOCK_DIVISIONS.length-1))*100)+'%';
           encoderHint.textContent = '⊙ scroll to adjust · click to save';
         }
+        return;
+      }
+      if(cat.special === 'presets'){
+        // Save / Load / Clear sub-screen for the chosen slot
+        const slotIdx = ms.catIdx;
+        const slot = presetData[slotIdx];
+        const actions = slot ? ['Load', 'Save (overwrite)', 'Clear'] : ['Save'];
+        renderCenteredList(menuItemsEl, actions, ms.presetActionIdx||0, i => actions[i]);
+        menuTitle.textContent = `SLOT ${slotIdx+1}` + (slot ? ` · ${slot.label}` : '');
+        encoderHint.textContent = '⊙ scroll · click to confirm';
         return;
       }
       const item = MENU_TREE[ms.rootIdx].items[ms.catIdx];
@@ -3083,7 +3430,12 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
     if(!ms.open){ menuOpen(); return; }
     const cat = MENU_TREE[ms.rootIdx];
     if(ms.depth === 0){
-      ms.depth = 1; ms.catIdx = 0; updateBackBtn(); menuRender();
+      ms.depth = 1;
+      // Light Color starts the cursor on whatever's already assigned to the
+      // active mood, rather than always resetting to "Mood (default)" —
+      // makes it obvious at a glance what's currently selected
+      ms.catIdx = (cat.special === 'lightcolor') ? (lightColorByMood[state.moodKey]||0) : 0;
+      updateBackBtn(); menuRender();
     } else if(ms.depth === 1){
       if(cat.special === 'visualizer'){
         vizMode = ms.catIdx;
@@ -3093,13 +3445,19 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
         ms.depth = 2; updateBackBtn(); menuRender();
       } else if(cat.special === 'tuning'){
         setTuningPos(ms.catIdx); menuClose();
+      } else if(cat.special === 'lightcolor'){
+        lightColorByMood[state.moodKey] = ms.catIdx;
+        applyMoodUI(state.moodKey); // refreshes accent AND every button LED to match
+        menuClose();
+      } else if(cat.special === 'presets'){
+        ms.presetActionIdx = 0; ms.depth = 2; updateBackBtn(); menuRender();
       } else {
         const item = cat.items[ms.catIdx];
         if(item.key === '_reset'){
-          Object.assign(knobValues, { voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60, brightness:50, chorus:55, density:45, space:50, volume:70, motion:55, seed:50, wetDry:75, masterLp:100, masterHp:0, resonance:0, eqTilt:50, drive:30 });
+          Object.assign(knobValues, { voicingWidth:40, harmonicRich:50, releaseScale:50, panWidth:60, brightness:50, chorus:55, density:45, space:50, volume:70, motion:55, seed:50, wetDry:75, masterLp:100, masterHp:0, resonance:0, eqTilt:50, drive:30, sparkleAmt:50 });
           knobControllers.harmRich.set(50); knobControllers.voicWidth.set(40);
           knobControllers.relTime.set(50);  knobControllers.panSprd.set(60);
-          knobControllers.brightness.set(50); knobControllers.chorus.set(55);
+          knobControllers.sparkle.set(50); knobControllers.chorus.set(55);
           knobControllers.seed.set(50);     knobControllers.wetDry.set(75);
           knobControllers.masterLp.set(100); knobControllers.masterHp.set(0);
           knobControllers.resonance.set(0); knobControllers.eqTilt.set(50);
@@ -3110,6 +3468,24 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
         }
       }
     } else if(ms.depth === 2){
+      const cat = MENU_TREE[ms.rootIdx];
+      if(cat.special === 'presets'){
+        const slotIdx = ms.catIdx;
+        const slot = presetData[slotIdx];
+        const actions = slot ? ['Load', 'Save (overwrite)', 'Clear'] : ['Save'];
+        const action = actions[ms.presetActionIdx || 0];
+        if(action === 'Save' || action === 'Save (overwrite)'){
+          presetData[slotIdx] = capturePresetSnapshot();
+          savePresetsToStorage();
+        } else if(action === 'Load'){
+          restorePresetSnapshot(slot);
+        } else if(action === 'Clear'){
+          presetData[slotIdx] = null;
+          savePresetsToStorage();
+        }
+        menuClose();
+        return;
+      }
       ms.depth = 1; updateBackBtn(); menuRender();
     }
   }
@@ -3122,6 +3498,8 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
       const len = cat.special==='visualizer' ? VIZ_MODES.length
                : cat.special==='clock' ? CLOCK_ITEMS.length
                : cat.special==='tuning' ? 3
+               : cat.special==='lightcolor' ? LIGHT_COLORS.length
+               : cat.special==='presets' ? PRESET_SLOTS.length
                : cat.items.length;
       ms.catIdx = ((ms.catIdx+delta)%len+len)%len;
     } else if(ms.depth === 2 && cat.special === 'clock'){
@@ -3135,13 +3513,14 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
         clockState.divisionIdx = ((clockState.divisionIdx+delta)%len+len)%len;
       }
       updateSyncIndicator();
+    } else if(ms.depth === 2 && cat.special === 'presets'){
+      const slot = presetData[ms.catIdx];
+      const actions = slot ? ['Load', 'Save (overwrite)', 'Clear'] : ['Save'];
+      const len = actions.length;
+      ms.presetActionIdx = (((ms.presetActionIdx||0)+delta)%len+len)%len;
     } else if(ms.depth === 2){
       const item = cat.items[ms.catIdx];
       knobValues[item.key] = Math.min(100, Math.max(0, knobValues[item.key] - delta*2));
-      if(item.key==='brightness' && state.ctx){
-        const mult = currentBrightnessMult();
-        state.activeVoices.forEach(v=>v.filter.frequency.setTargetAtTime(v.baseCutoff*mult, state.ctx.currentTime, 0.3));
-      }
       if(item.key==='chorus' && state.chorusWet){
         state.chorusWet.gain.setTargetAtTime(currentChorus(), state.ctx.currentTime, 0.2);
       }
@@ -3274,7 +3653,7 @@ canvas#orb{ position:absolute; inset:11px; border-radius:50%; filter:blur(15px);
   }
 
   // double rAF ensures browser has done a full layout pass before we measure offsetWidth
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{ layoutAllArcRows(); }));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ layoutAllArcRows(); resizeCanvas(); }));
   window.addEventListener('resize', layoutAllArcRows);
 
   applyMoodUI(state.moodKey);
