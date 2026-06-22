@@ -87,9 +87,62 @@ body{
 
 /* ---- nameplate / brand ---- */
 .nameplate{
-  text-align:center; margin-bottom:16px; position:relative; z-index:1;
+  display:flex; align-items:flex-start;
+  margin-bottom:16px; position:relative; z-index:1;
   padding-bottom:8px;
   border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nameplate-title{ flex:1; text-align:center; }
+.nameplate-spacer{ flex:0 0 auto; }
+
+/* ---- osc waveform selector ---- */
+.osc-selector{
+  display:flex; align-items:flex-start; gap:3px;
+  padding-top:2px; flex-shrink:0;
+}
+.osc-outer-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.48rem; letter-spacing:0.08em;
+  color:var(--engrave-dim);
+  writing-mode:vertical-rl; transform:rotate(180deg);
+  align-self:center; margin-right:1px;
+}
+.osc-bracket{
+  width:5px;
+  border-left:1.5px solid var(--engrave-dim);
+  border-top:1.5px solid var(--engrave-dim);
+  border-bottom:1.5px solid var(--engrave-dim);
+  border-radius:2px 0 0 2px;
+  margin-top:17px;
+  align-self:stretch;
+}
+.osc-grid{ display:flex; flex-direction:column; gap:2px; }
+.osc-wave-headers{
+  display:flex; gap:2px; padding-left:14px; margin-bottom:1px;
+}
+.osc-wave-icon{
+  width:22px; display:flex; justify-content:center; align-items:center;
+  color:var(--engrave-dim);
+}
+.osc-row{ display:flex; align-items:center; gap:2px; }
+.osc-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.48rem; color:var(--engrave-dim);
+  width:12px; text-align:right; flex-shrink:0;
+}
+.osc-btn{
+  width:22px; height:14px;
+  background:var(--panel-lo);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:2px; cursor:pointer;
+  transition:background 0.12s, border-color 0.12s;
+  padding:0;
+}
+.osc-btn:hover{ background:var(--panel-hi); border-color:rgba(255,255,255,0.14); }
+.osc-btn.osc-active{
+  background:var(--brass-dark);
+  border-color:var(--brass);
+  box-shadow:0 0 5px rgba(184,137,74,0.25);
 }
 .brand{
   font-family:'Oswald', sans-serif; font-weight:600;
@@ -735,8 +788,52 @@ canvas#orb{
   <span class="screw" style="bottom:12px;right:12px;"></span>
 
   <div class="nameplate">
-    <div class="brand">DRIFTWOOD</div>
-    <div class="model-line">Generative Atmospheric Pad Engine</div>
+    <div class="osc-selector">
+      <div class="osc-outer-label">OSC</div>
+      <div class="osc-bracket"></div>
+      <div class="osc-grid">
+        <div class="osc-wave-headers">
+          <div class="osc-num"></div>
+          <div class="osc-wave-icon"><svg viewBox="0 0 24 14" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M0,7 C3,2 9,2 12,7 C15,12 21,12 24,7"/></svg></div>
+          <div class="osc-wave-icon"><svg viewBox="0 0 24 14" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0,11 L0,3 L12,3 L12,11 L24,11 L24,3"/></svg></div>
+          <div class="osc-wave-icon"><svg viewBox="0 0 24 14" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0,11 L6,3 L12,11 L18,3 L24,11"/></svg></div>
+          <div class="osc-wave-icon"><svg viewBox="0 0 24 14" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0,11 L12,3 L12,11 L24,3"/></svg></div>
+        </div>
+        <div class="osc-row">
+          <span class="osc-num">1</span>
+          <button class="osc-btn osc-active" data-osc="0" data-wave="sine"></button>
+          <button class="osc-btn" data-osc="0" data-wave="square"></button>
+          <button class="osc-btn" data-osc="0" data-wave="triangle"></button>
+          <button class="osc-btn" data-osc="0" data-wave="sawtooth"></button>
+        </div>
+        <div class="osc-row">
+          <span class="osc-num">2</span>
+          <button class="osc-btn osc-active" data-osc="1" data-wave="sine"></button>
+          <button class="osc-btn" data-osc="1" data-wave="square"></button>
+          <button class="osc-btn" data-osc="1" data-wave="triangle"></button>
+          <button class="osc-btn" data-osc="1" data-wave="sawtooth"></button>
+        </div>
+        <div class="osc-row">
+          <span class="osc-num">3</span>
+          <button class="osc-btn osc-active" data-osc="2" data-wave="sine"></button>
+          <button class="osc-btn" data-osc="2" data-wave="square"></button>
+          <button class="osc-btn" data-osc="2" data-wave="triangle"></button>
+          <button class="osc-btn" data-osc="2" data-wave="sawtooth"></button>
+        </div>
+        <div class="osc-row">
+          <span class="osc-num">4</span>
+          <button class="osc-btn osc-active" data-osc="3" data-wave="sine"></button>
+          <button class="osc-btn" data-osc="3" data-wave="square"></button>
+          <button class="osc-btn" data-osc="3" data-wave="triangle"></button>
+          <button class="osc-btn" data-osc="3" data-wave="sawtooth"></button>
+        </div>
+      </div>
+    </div>
+    <div class="nameplate-title">
+      <div class="brand">DRIFTWOOD</div>
+      <div class="model-line">Generative Atmospheric Pad Engine</div>
+    </div>
+    <div class="nameplate-spacer"></div>
   </div>
 
   <div class="display-row">
@@ -1065,6 +1162,8 @@ canvas#orb{
       tidePeriod:200, sparkleChance:0.06, filterEnv:1.3
     }
   };
+
+  let oscWaveforms = ['sine','sine','sine','sine'];
 
   const state = {
     moodKey:'foundational',
@@ -2281,7 +2380,7 @@ canvas#orb{
     const ctx = state.ctx;
     const baseCents = [-9, 9, -4, 4];
     const detunesCents = baseCents.map(c => c * seedDetune());
-    const waveforms = ['triangle', 'triangle', 'sine', 'sine'];
+    const waveforms = [...oscWaveforms];
     const lfoMult = seedLfoRate();
 
     const filter = ctx.createBiquadFilter();
@@ -3504,7 +3603,9 @@ canvas#orb{
     state.timers = [];
 
     const ctx = state.ctx;
-    const fadeTime = 2.5;
+    const fadeTime = 2.5;   /* voice fade */
+    const tailTime = 5.0;   /* master fade — long enough for reverb tail to decay fully */
+
     [...state.activeVoices].forEach(v => swellOutAndKill(v, fadeTime));
     state.activeVoices = [];
 
@@ -3518,9 +3619,15 @@ canvas#orb{
       state.shimmerVoice.gainNode.gain.setValueAtTime(state.shimmerVoice.gainNode.gain.value, ctx.currentTime);
       state.shimmerVoice.gainNode.gain.linearRampToValueAtTime(0.0001, ctx.currentTime+fadeTime);
     }
-    setTimeout(()=>{
-      try{ ctx.close(); }catch(e){}
-    }, (fadeTime+0.5)*1000);
+
+    /* fade masterGain over tailTime to catch reverb tail naturally */
+    if(state.masterGain){
+      state.masterGain.gain.cancelScheduledValues(ctx.currentTime);
+      state.masterGain.gain.setValueAtTime(state.masterGain.gain.value, ctx.currentTime);
+      state.masterGain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + tailTime);
+    }
+
+    setTimeout(()=>{ try{ ctx.close(); }catch(e){} }, (tailTime + 0.5) * 1000);
     chordLabel.textContent = '— · — · —';
     timeLabel.textContent = '00:00';
   }
@@ -3578,6 +3685,19 @@ canvas#orb{
     knobControllers.masterLp.set(newMasterLp);
     // retrigger chord so new density/rel time are heard quickly
     scheduleChordRetrigger();
+  });
+
+  // ---- OSC waveform selectors ----
+  document.querySelectorAll('.osc-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.osc);
+      const wave = btn.dataset.wave;
+      oscWaveforms[idx] = wave;
+      document.querySelectorAll(`.osc-btn[data-osc="${idx}"]`).forEach(b=>{
+        b.classList.toggle('osc-active', b.dataset.wave === wave);
+      });
+      scheduleChordRetrigger();
+    });
   });
 
   // ---- iOS AudioContext unlock ----
