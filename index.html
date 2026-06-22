@@ -999,7 +999,7 @@ canvas#orb{
       </div>
     </div>
 
-    <button class="btn-engage" id="playBtn">Engage</button>
+    <button class="btn-engage" id="playBtn">Sail</button>
 
     <div class="transport-right">
       <div class="seed-unit">
@@ -3485,7 +3485,6 @@ canvas#orb{
       state.isPlaying = true;
       state.engineStartTime = Date.now();
       state.lastRootStep = null;
-      playBtn.textContent = 'Stop';
       playBtn.classList.add('live');
       const mood = MOODS[state.moodKey];
       state.droneVoice = makeDrone(mood);
@@ -3499,7 +3498,6 @@ canvas#orb{
   function stop(){
     if(!state.isPlaying) return;
     state.isPlaying = false;
-    playBtn.textContent = 'Engage';
     playBtn.classList.remove('live');
     stopTimeReadout();
     state.timers.forEach(t=>clearTimeout(t));
